@@ -19,7 +19,7 @@
 ---
 apiVersion: v2
 name: tika
-version: "1.26"
+version: "latest-full"
 #kubeVersion:
 description: A Helm chart to deploy Apache Tika on Kubernetes
 type: application
@@ -38,6 +38,6 @@ maintainers:
     email: lewismc@apache.org
     url: https://github.com/lewismc
 icon: https://tika.apache.org/tika.png
-appVersion: "1.26"
+appVersion: "latest-full"
 deprecated: false
 #annotations:

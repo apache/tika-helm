@@ -8,7 +8,7 @@ A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].
 
 <img src="https://tika.apache.org/tika.png" width="300" />
 
-This Helm chart is a lightweight way to configure and run the official [Tika Docker image][].
+This Helm chart is a lightweight way to configure and run the official [apache/tika][] Docker image.
 
 We recommend that the Helm chart version is aligned to the version Tika (and subsequently the 
 version of the [Tika Docker image][]) you want to deploy. 
@@ -123,6 +123,7 @@ The code is licensed permissively under the [Apache License v2.0][].
 [BREAKING_CHANGES.md]: https://github.com/apache/tika-helm/blob/master/BREAKING_CHANGES.md
 [CHANGELOG.md]: https://github.com/apache/tika-helm/blob/master/CHANGELOG.md
 [CONTRIBUTING]: https://github.com/apache/tika#contributing-via-github
+[apache/tika]: https://github.com/apache/tika-docker
 [Helm chart]: https://helm.sh/docs/topics/charts/
 [Kubernetes]: https://kubernetes.io/
 [Tika Docker image]: https://hub.docker.com/r/apache/tika/tags?page=1&ordering=last_updated

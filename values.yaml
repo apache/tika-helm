@@ -20,10 +20,10 @@
 replicaCount: 1
 
 image:
-  repository: apache/tika-docker
+  repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.26"
+  tag: "latest-full"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -53,7 +53,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 9998
 
 ingress:
   enabled: false

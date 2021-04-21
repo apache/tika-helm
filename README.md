@@ -55,7 +55,21 @@ in which case you may need to augment the commands below.
 `helm repo add tika https://apache.jfrog.io/artifactory/tika`
 
 * Install it:
-  - with Helm 3: `helm install tika tika/tika --version ${release_version}`
+  - with Helm 3: `helm install tika tika/tika --version ${release_version}`, you will see something like
+```
+% helm install tika tika/tika --version 1.26 -n tika-test
+NAME: tika
+LAST DEPLOYED: Wed Apr 21 12:15:50 2021
+NAMESPACE: tika-test
+STATUS: deployed
+REVISION: 1
+NOTES:
+1. Get the application URL by running these commands:
+  export POD_NAME=$(kubectl get pods --namespace tika-test -l "app.kubernetes.io/name=tika,app.kubernetes.io/instance=tika" -o jsonpath="{.items[0].metadata.name}")
+  export CONTAINER_PORT=$(kubectl get pod --namespace tika-test $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+  echo "Visit http://127.0.0.1:9998 to use your application"
+  kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT
+```
 
 ### Install development version using master branch
 

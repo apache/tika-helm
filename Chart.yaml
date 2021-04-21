@@ -19,7 +19,7 @@
 ---
 apiVersion: v2
 name: tika
-version: "latest-full"
+version: "1.26"
 #kubeVersion:
 description: A Helm chart to deploy Apache Tika on Kubernetes
 type: application
@@ -38,7 +38,7 @@ maintainers:
     email: dev@tika.apache.org
     url: https://tika.apache.org
 icon: https://tika.apache.org/tika.png
-appVersion: "latest-full"
+appVersion: "1.26"
 deprecated: false
 annotations:
   # artifacthub.io/changes: |
@@ -46,7 +46,7 @@ annotations:
   artifacthub.io/containsSecurityUpdates: "true"
   artifacthub.io/images: |
     - name: tika
-      image: apache/tika:latest-full
+      image: apache/tika:1.26
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |
     - name: Apache Tika

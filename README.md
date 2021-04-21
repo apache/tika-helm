@@ -48,14 +48,14 @@ will work with the version of Tika you are installing.
 
 ### Install released version using Helm repository
 
-**N.B.** You may or may not need/wish to install the chart into a specific namespace, 
+**N.B.** You may or may not need/wish to install the chart into a specific **namespace**, 
 in which case you may need to augment the commands below.
 
 * Add the Tika Helm charts repo:
 `helm repo add tika https://apache.jfrog.io/artifactory/tika`
 
 * Install it:
-  - with Helm 3: `helm install tika tika/${release_version}`
+  - with Helm 3: `helm install tika tika/tika --version ${release_version}`
 
 ### Install development version using master branch
 

@@ -51,14 +51,11 @@ will work with the version of Tika you are installing.
 **N.B.** You may or may not need/wish to install the chart into a specific namespace, 
 in which case you may need to augment the commands below.
 
-<!--
-* Add the Elastic Helm charts repo:
-`helm repo add elastic https://helm.elastic.co`
+* Add the Tika Helm charts repo:
+`helm repo add tika https://apache.jfrog.io/artifactory/tika`
 
 * Install it:
-  - with Helm 3: `helm install filebeat elastic/filebeat`
-  - with Helm 2 (deprecated): `helm install --name filebeat elastic/filebeat`
--->
+  - with Helm 3: `helm install tika tika/${release_version}`
 
 ### Install development version using master branch
 

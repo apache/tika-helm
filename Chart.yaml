@@ -19,7 +19,7 @@
 ---
 apiVersion: v2
 name: tika
-version: "1.25"
+version: "1.26"
 #kubeVersion:
 description: A Helm chart to deploy Apache Tika on Kubernetes
 type: application

@@ -57,7 +57,7 @@ in which case you may need to augment the commands below.
 * Install it:
   - with Helm 3: `helm install tika tika/tika --version ${release_version}`, you will see something like
 ```
-% helm install tika tika/tika --version 1.26 -n tika-test
+% helm install tika tika/tika --version 2.2.1-full -n tika-test
 NAME: tika
 LAST DEPLOYED: Wed Apr 21 12:15:50 2021
 NAMESPACE: tika-test

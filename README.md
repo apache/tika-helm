@@ -55,9 +55,9 @@ in which case you may need to augment the commands below.
 `helm repo add tika https://apache.jfrog.io/artifactory/tika`
 
 * Install it:
-  - with Helm 3: `helm install tika tika/tika --set version=${release_version} -n tika-test`, you will see something like
+  - with Helm 3: `helm install tika tika/tika --set image.tag=${release.version} -n tika-test`, you will see something like
 ```
-% helm install tika tika/tika --version 2.2.1-full -n tika-test
+% helm install tika tika/tika --set image.tag=2.2.1-full -n tika-test
 NAME: tika
 LAST DEPLOYED: Mon Jan 24 13:38:01 2022
 NAMESPACE: tika-test

@@ -23,7 +23,7 @@ image:
   repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.0.0-BETA-full"
+  tag: "2.2.1-full"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -44,7 +44,7 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 securityContext:
-  allowPrivilegeEscalation: false
+  allowPrivilegeEscalation: true
   capabilities:
     drop:
     - ALL

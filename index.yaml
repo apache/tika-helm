@@ -1,0 +1,46 @@
+apiVersion: v1
+entries:
+  tika:
+  - annotations:
+      artifacthub.io/containsSecurityUpdates: "true"
+      artifacthub.io/images: |
+        - name: tika
+          image: apache/tika:1.26
+      artifacthub.io/license: Apache-2.0
+      artifacthub.io/links: |
+        - name: Apache Tika
+          url: https://github.com/apache/tika
+        - name: Tika Helm Chart
+          url: https://github.com/apache/tika-helm
+        - name: Tika Docker Image
+          url: https://github.com/apache/tika-docker
+      artifacthub.io/maintainers: |
+        - name: Apache Tika Developers
+          email: dev@tika.apache.org
+      artifacthub.io/operator: "false"
+      artifacthub.io/prerelease: "false"
+    apiVersion: v2
+    appVersion: "1.26"
+    created: "2023-02-08T11:20:39.548336384+01:00"
+    description: A Helm chart to deploy Apache Tika on Kubernetes
+    digest: 0395f1b1ae09990073b7b9b773da4f0120f00d5f35c68a351d4c8864e327f65b
+    home: https://tika.apache.org
+    icon: https://tika.apache.org/tika.png
+    keywords:
+    - apache
+    - tika
+    - apache-tika
+    - tika-helm
+    maintainers:
+    - email: dev@tika.apache.org
+      name: Apache Tika Developers
+      url: https://tika.apache.org
+    name: tika
+    sources:
+    - https://github.com/apache/tika
+    - https://github.com/apache/tika-helm
+    type: application
+    urls:
+    - https://frascu.github.io/tika-helm/tika-1.26.tgz
+    version: "1.26"
+generated: "2023-02-08T11:20:39.546220331+01:00"

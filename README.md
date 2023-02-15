@@ -57,7 +57,9 @@ in which case you may need to augment the commands below.
 * Install it:
   - with Helm 3: `helm install tika tika/tika --set image.tag=${release.version} -n tika-test`, you will see something like
 ```
-% helm install tika tika/tika --set image.tag=2.2.1-full -n tika-test
+helm install tika tika/tika --set image.tag=latest-full -n tika-test
+
+...
 NAME: tika
 LAST DEPLOYED: Mon Jan 24 13:38:01 2022
 NAMESPACE: tika-test
@@ -70,6 +72,11 @@ NOTES:
   echo "Visit http://127.0.0.1:9998 to use your application"
   kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT
 ```
+You may notice that the _kubectl port forwarding_ experiences a _timeout issue_ which ultimately kills the app. In this case you can run port formarding in a loop
+```
+while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT ; done
+```
+... this should keep `kubectl` reconnecting on connection lost.
 
 ### Install development version using master branch
 
@@ -77,8 +84,6 @@ NOTES:
 
 * Install it:
   - with Helm 3: `helm install tika . --set image.tag=latest-full`
-  - with Helm 2 (deprecated): `helm install --name tika . --set image.tag=latest-full`
-
 
 ## Upgrading
 

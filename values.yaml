@@ -109,5 +109,12 @@ tolerations: []
 
 affinity: {}
 
+networkPolicy:
+  # networkPolicy.enabled -- Create a network policy to restrict traffic to pods
+  # within the same namespace that include the label `<release>-client: true`.
+  enabled: false
+  # networkPolicy.allowExternal -- Don't require a "-client" label for connections.
+  allowExternal: false
+
 config:
   base_url: localhost

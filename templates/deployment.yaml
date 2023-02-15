@@ -59,16 +59,43 @@ spec:
             mountPath: /tmp
           ports:
             - name: http
-              containerPort: 9998
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
+          # livenessProbe:
+          #   httpGet:
+          #     path: /
+          #     port: http
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{end}}/
+              port: {{ .Values.service.port }}
+# {{- if .Values.config.base_url}}
+#               httpHeaders:
+#                 - name: Host
+#                   value: {{ regexReplaceAll ":\\d+$" (urlParse (tpl .Values.config.base_url .)).host  "" }}
+# {{- end }}
+              scheme: {{ .Values.livenessProbe.scheme | default "http" }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 15 }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 20 }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 5 }}
           readinessProbe:
+            # httpGet:
+            #   path: /
+            #   port: http
             httpGet:
-              path: /
-              port: http
+              path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{end}}/
+              port: {{ .Values.service.port  }}
+# {{- if .Values.config.base_url}}
+#               httpHeaders:
+#                 - name: Host
+#                   value: {{ regexReplaceAll ":\\d+$" (urlParse (tpl .Values.config.base_url .)).host  "" }}
+# {{- end }}
+              scheme: {{ .Values.readinessProbe.scheme | default "http" }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 15 }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 20 }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds | default 5 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

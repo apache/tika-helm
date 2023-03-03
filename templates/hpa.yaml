@@ -17,7 +17,7 @@
 
 ---
 {{- if .Values.autoscaling.enabled }}
-apiVersion: autoscaling/v2beta1
+apiVersion: {{ .Values.autoscaling.apiVersion }}
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "tika-helm.fullname" . }}

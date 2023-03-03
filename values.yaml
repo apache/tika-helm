@@ -23,7 +23,7 @@ image:
   repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "1.26"
+  tag: "latest-full"
 
 imagePullSecrets: []
 nameOverride: ""
@@ -44,6 +44,7 @@ podSecurityContext: {}
   # fsGroup: 2000
 
 securityContext:
+  allowPrivilegeEscalation: true
   capabilities:
     drop:
     - ALL
@@ -68,6 +69,20 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+
+livenessProbe:
+  initialDelaySeconds: 15
+  timeoutSeconds: 30
+  failureThreshold: 20
+  periodSeconds: 5
+  scheme: HTTP
+
+readinessProbe:
+  initialDelaySeconds: 15
+  timeoutSeconds: 30
+  failureThreshold: 20
+  periodSeconds: 5
+  scheme: HTTP
 
 resources:
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -100,3 +115,6 @@ networkPolicy:
   enabled: false
   # networkPolicy.allowExternal -- Don't require a "-client" label for connections.
   allowExternal: false
+
+config:
+  base_url: localhost

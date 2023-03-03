@@ -19,9 +19,10 @@
 ---
 apiVersion: v2
 name: tika
-version: "1.26"
+appVersion: "latest-full"
+version: "latest-full"
 #kubeVersion:
-description: A Helm chart to deploy Apache Tika on Kubernetes
+description: The official Helm chart to deploy Apache Tika on Kubernetes
 type: application
 keywords:
   - apache
@@ -38,25 +39,4 @@ maintainers:
     email: dev@tika.apache.org
     url: https://tika.apache.org
 icon: https://tika.apache.org/tika.png
-appVersion: "1.26"
 deprecated: false
-annotations:
-  # artifacthub.io/changes: |
-  #   - 
-  artifacthub.io/containsSecurityUpdates: "true"
-  artifacthub.io/images: |
-    - name: tika
-      image: apache/tika:1.26
-  artifacthub.io/license: Apache-2.0
-  artifacthub.io/links: |
-    - name: Apache Tika
-      url: https://github.com/apache/tika
-    - name: Tika Helm Chart
-      url: https://github.com/apache/tika-helm
-    - name: Tika Docker Image
-      url: https://github.com/apache/tika-docker
-  artifacthub.io/maintainers: |
-    - name: Apache Tika Developers
-      email: dev@tika.apache.org
-  artifacthub.io/operator: "false"
-  artifacthub.io/prerelease: "false"

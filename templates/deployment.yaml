@@ -45,24 +45,40 @@ spec:
       serviceAccountName: {{ include "tika-helm.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: sec-ctx-vol
+        emptyDir: {}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          volumeMounts:
+          - name: sec-ctx-vol
+            mountPath: /tmp
           ports:
             - name: http
-              containerPort: 9998
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{end}}/
+              port: {{ .Values.service.port }}
+              scheme: {{ .Values.livenessProbe.scheme | default "http" }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 15 }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 20 }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 5 }}
           readinessProbe:
             httpGet:
-              path: /
-              port: http
+              path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{end}}/
+              port: {{ .Values.service.port  }}
+              scheme: {{ .Values.readinessProbe.scheme | default "http" }}
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 15 }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 30 }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 20 }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds | default 5 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

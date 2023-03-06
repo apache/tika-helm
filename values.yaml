@@ -118,4 +118,4 @@ networkPolicy:
   allowExternal: false
 
 config:
-  base_url: localhost
+  base_url: "http://localhost/"

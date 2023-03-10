@@ -19,8 +19,8 @@
 ---
 apiVersion: v2
 name: tika
-appVersion: "latest-full"
-version: "latest-full"
+appVersion: "2.7.0.0"
+version: "2.7.0"
 #kubeVersion:
 description: The official Helm chart to deploy Apache Tika on Kubernetes
 type: application

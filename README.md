@@ -1,7 +1,7 @@
 tika-helm
 =========
 
-![lint + install workflow](https://github.com/apache/tika-helm/actions/workflows/lint-test.yaml.yml/badge.svg)
+![lint + install workflow](https://github.com/apache/tika-helm/actions/workflows/lint-test.yaml/badge.svg)
 
 A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].
 

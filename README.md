@@ -1,9 +1,6 @@
 tika-helm
 =========
 
-<!--[![Build Status](https://img.shields.io/jenkins/s/https/devops-ci.elastic.co/job/elastic+helm-charts+master.svg)](https://devops-ci.elastic.co/job/elastic+helm-charts+master/)-->
-<!--[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/apache)](https://artifacthub.io/packages/search?repo=apache)-->
-
 A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].
 
 <img src="https://tika.apache.org/tika.png" width="300" />

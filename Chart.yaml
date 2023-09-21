@@ -19,8 +19,8 @@
 ---
 apiVersion: v2
 name: tika
-appVersion: "2.7.0.0"
-version: "2.7.0"
+appVersion: "2.9.0.0"
+version: "2.9.0"
 description: The official Helm chart to deploy Apache Tika on Kubernetes
 type: application
 keywords:
@@ -35,6 +35,7 @@ sources:
 maintainers:
   - name: lewismc
     email: lewismc@apache.org
+    url: https://github.com/lewismc
   - name: stijnbrouwers
     url: https://github.com/stijnbrouwers
   - name: philipsoutham

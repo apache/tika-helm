@@ -48,8 +48,13 @@ spec:
       volumes:
       - name: sec-ctx-vol
         emptyDir: {}
+      - name: tika-config
+        configMap:
+          name: {{ .Chart.Name }}-config
+          defaultMode: 0777
       containers:
         - name: {{ .Chart.Name }}
+          args: ["-c" , "/tika-config/tika-config.xml"]
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -57,6 +62,8 @@ spec:
           volumeMounts:
           - name: sec-ctx-vol
             mountPath: /tmp
+          - name: tika-config
+            mountPath: /tika-config
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

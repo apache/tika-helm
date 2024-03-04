@@ -1,7 +1,9 @@
+{{- if .Values.tikaConfig }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-config
 data:
   tika-config.xml: |-
-{{ .Files.Get "files/tika-config.xml" | indent 4 }}
+{{ .Values.tikaConfig | indent 4 }}
+{{- end }}

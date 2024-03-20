@@ -91,7 +91,7 @@ while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAI
 
 ### Custom configuration for tika
 
-To use custom [configuration](https://tika.apache.org/1.9/configuring.html) values for apache tika, use the `tikaConfig` key in the `values.yaml`.
+To use custom [configuration]( https://tika.apache.org/2.9.1/configuring.html) values for apache tika, use the `tikaConfig` key in the `values.yaml`.
 Example:
 ```
 tikaConfig: |
@@ -102,10 +102,6 @@ tikaConfig: |
       <parser class="org.apache.tika.parser.DefaultParser">
         <mime-exclude>image/jpeg</mime-exclude>
         <mime-exclude>application/pdf</mime-exclude>
-      </parser>
-      <!-- Use a different parser for PDF -->
-      <parser class="org.apache.tika.parser.EmptyParser">
-        <mime>application/pdf</mime>
       </parser>
     </parsers>
   </properties>

@@ -56,7 +56,7 @@ annotations:
         - name: Jira Issue
           url: https://issues.apache.org/jira/browse/TIKA-4227
         - name: GitHub PR
-          url: https://github.com/pr-url
+          url: https://github.com/apache/tika-helm/pull/16
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |

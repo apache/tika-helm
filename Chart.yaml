@@ -57,7 +57,7 @@ annotations:
           url: https://issues.apache.org/jira/browse/TIKA-4227
         - name: GitHub PR
           url: https://github.com/pr-url
-  artifacthub.io/containsSecurityUpdates: "false" 
+  artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |
     - name: support

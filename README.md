@@ -1,6 +1,8 @@
 tika-helm
 =========
 
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/apache-tika)](https://artifacthub.io/packages/search?repo=apache-tika)
+
 ![lint + install workflow](https://github.com/apache/tika-helm/actions/workflows/lint-test.yaml/badge.svg)
 
 A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].

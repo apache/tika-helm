@@ -15,27 +15,27 @@
 # specific language governing permissions and limitations
 # under the License.
 
----
-{{- if .Values.networkPolicy.enabled }}
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ template "tika-helm.fullname" . }}
-  labels:
-    {{- include "tika-helm.labels" . | nindent 4 }}
-spec:
-  podSelector:
-    matchLabels:
-      {{- include "tika-helm.selectorLabels" . | nindent 6 }}
-  egress:
-    - {}
-  ingress:
-    - ports:
-      - port: {{ .Values.service.port }}
-      {{- if not .Values.networkPolicy.allowExternal }}
-      from:
-        - podSelector:
-          matchLabels:
-            {{ template "tika-helm.fullname" . }}-client: "true"
-      {{- end }}
-{{- end }}
+suite: test service
+templates:
+  - service.yaml
+tests:
+  - it: should pass
+    set:
+      image.tag: latest
+    asserts:
+      - isKind:
+          of: Service
+      - matchRegex:
+          path: metadata.name
+          pattern: RELEASE-NAME-tika
+      - isAPIVersion:
+          of: v1
+      - equal:
+          path: spec.type
+          value: ClusterIP
+      - lengthEqual:
+          path: spec.ports
+          count: 1
+      - equal:
+          path: spec.ports[0].port
+          value: 9998

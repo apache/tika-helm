@@ -31,7 +31,7 @@ will work with the version of Tika you are installing.
 - [Upgrading](#upgrading)
 - [Configuration](#configuration)
   - [Deprecated](#deprecated)
-- [FAQ](#faq)
+- [Testing](#testing)
 - [Contributing](#contributing)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
@@ -95,11 +95,14 @@ Please check `artifacthub.io/changes` in `Chart.yaml` before upgrading.
 |--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
 | `...`             | ...                                                                                        | ...               |
 
-### Deprecated
+## Testing
 
-| Parameter            | Description                                                                                                                                          | Default |
-|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `...`           | ...                                                                                                    | `...`    |
+```
+helm plugin install https://github.com/helm-unittest/helm-unittest.git
+helm unittest .
+```
+
+See [helm-unittest][] for canonical documentation.
 
 ## Contributing
 
@@ -129,6 +132,7 @@ The code is licensed permissively under the [Apache License v2.0][].
 [CHANGELOG.md]: https://github.com/apache/tika-helm/blob/master/CHANGELOG.md
 [CONTRIBUTING]: https://github.com/apache/tika#contributing-via-github
 [apache/tika]: https://github.com/apache/tika-docker
+[helm-unittest]: https://github.com/helm-unittest/helm-unittest
 [Helm chart]: https://helm.sh/docs/topics/charts/
 [Kubernetes]: https://kubernetes.io/
 [Tika Docker image]: https://hub.docker.com/r/apache/tika/tags?page=1&ordering=last_updated

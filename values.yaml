@@ -121,7 +121,8 @@ networkPolicy:
 
 config:
   base_url: 'http://localhost/'
-# Use the below block to use custom tika-config.xml
+# Use the below block to use custom tika-config.xml.
+# Refer https://tika.apache.org/2.9.1/configuring.html to know more about configuring apache-tika
 # tikaConfig: |
 #   <?xml version="1.0" encoding="UTF-8"?>
 #   <properties>

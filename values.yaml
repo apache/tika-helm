@@ -23,11 +23,11 @@ image:
   repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.9.0.0-full"
+  tag: '2.9.0.0-full'
 
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+nameOverride: ''
+fullnameOverride: ''
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -36,18 +36,19 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  name: ''
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
 securityContext:
   allowPrivilegeEscalation: true
   capabilities:
     drop:
-    - ALL
+      - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 35002
@@ -59,7 +60,8 @@ service:
 
 ingress:
   enabled: false
-  annotations: {}
+  annotations:
+    {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
@@ -90,10 +92,10 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: "2"
+    cpu: '2'
     memory: 2000Mi
   requests:
-    cpu: "1"
+    cpu: '1'
     memory: 1500Mi
 
 autoscaling:
@@ -118,4 +120,22 @@ networkPolicy:
   allowExternal: false
 
 config:
-  base_url: "http://localhost/"
+  base_url: 'http://localhost/'
+# Use the below block to use custom tika-config.xml
+# tikaConfig: |
+#   <?xml version="1.0" encoding="UTF-8"?>
+#   <properties>
+#     <parsers>
+#       <!-- Default Parser for most things, except for 2 mime types, and never
+#           use the Executable Parser -->
+#       <parser class="org.apache.tika.parser.DefaultParser">
+#         <mime-exclude>image/jpeg</mime-exclude>
+#         <mime-exclude>application/pdf</mime-exclude>
+#         <parser-exclude class="org.apache.tika.parser.executable.ExecutableParser"/>
+#       </parser>
+#       <!-- Use a different parser for PDF -->
+#       <parser class="org.apache.tika.parser.EmptyParser">
+#         <mime>application/pdf</mime>
+#       </parser>
+#     </parsers>
+#   </properties>

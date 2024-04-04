@@ -1,6 +1,8 @@
 tika-helm
 =========
 
+[![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/apache-tika)](https://artifacthub.io/packages/search?repo=apache-tika)
+
 ![lint + install workflow](https://github.com/apache/tika-helm/actions/workflows/lint-test.yaml/badge.svg)
 
 A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].
@@ -29,10 +31,8 @@ will work with the version of Tika you are installing.
     - [Install development version using master branch](#install-development-version-using-master-branch)
     - [Custom configuration for tika](#custom-configuration-for-tika)
   - [Upgrading](#upgrading)
-  - [Usage notes](#usage-notes)
   - [Configuration](#configuration)
     - [Deprecated](#deprecated)
-  - [FAQ](#faq)
   - [Contributing](#contributing)
   - [More Information](#more-information)
   - [Authors](#authors)
@@ -108,14 +108,7 @@ tikaConfig: |
 ```
 ## Upgrading
 
-Please always check [CHANGELOG.md][] and [BREAKING_CHANGES.md][] before
-upgrading to a new chart version.
-
-
-## Usage notes
-
-* TODO
-
+Please check `artifacthub.io/changes` in `Chart.yaml` before upgrading.
 
 ## Configuration
 
@@ -128,10 +121,6 @@ upgrading to a new chart version.
 | Parameter | Description | Default |
 | --------- | ----------- | ------- |
 | `...`     | ...         | `...`   |
-
-## FAQ
-
-None yet...
 
 ## Contributing
 

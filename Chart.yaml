@@ -21,7 +21,7 @@ apiVersion: v2
 name: tika
 appVersion: "2.9.0.0-full"
 version: "2.9.0-full"
-description: The official Helm chart to deploy Apache Tika on Kubernetes
+description: The official Helm chart for Apache Tika
 type: application
 keywords:
   - apache
@@ -30,8 +30,8 @@ keywords:
   - tika-helm
 home: https://tika.apache.org
 sources:
-  - https://github.com/apache/tika
   - https://github.com/apache/tika-helm
+  - https://github.com/apache/tika
 maintainers:
   - name: lewismc
     email: lewismc@apache.org
@@ -46,3 +46,23 @@ maintainers:
     url: https://github.com/euven
 icon: https://tika.apache.org/tika.png
 deprecated: false
+annotations:
+  artifacthub.io/category: integration-delivery
+  # supported kinds are added, changed, deprecated, removed, fixed and security
+  artifacthub.io/changes: |
+    - kind: added
+      description: TIKA-4227 Register tika-helm Chart in artifacthub.io
+      links:
+        - name: Jira Issue
+          url: https://issues.apache.org/jira/browse/TIKA-4227
+        - name: GitHub PR
+          url: https://github.com/apache/tika-helm/pull/16
+  artifacthub.io/containsSecurityUpdates: "false"
+  artifacthub.io/license: Apache-2.0
+  artifacthub.io/links: |
+    - name: support
+      url: https://issues.apache.org/jira/browse/TIKA
+  artifacthub.io/prerelease: "false"
+  artifacthub.io/recommendations: |
+    - url: https://artifacthub.io/packages/helm/apache-solr/solr
+    - url: https://artifacthub.io/packages/helm/apache-airflow/airflow

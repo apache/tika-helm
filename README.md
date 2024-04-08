@@ -24,15 +24,19 @@ will work with the version of Tika you are installing.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 
-- [Requirements](#requirements)
-- [Installing](#installing)
-  - [Install released version using Helm repository](#install-released-version-using-helm-repository)
-  - [Install development version using master branch](#install-development-version-using-master-branch)
-- [Upgrading](#upgrading)
-- [Configuration](#configuration)
-  - [Deprecated](#deprecated)
-- [FAQ](#faq)
-- [Contributing](#contributing)
+- [tika-helm](#tika-helm)
+  - [Requirements](#requirements)
+  - [Installing](#installing)
+    - [Install released version using Helm repository](#install-released-version-using-helm-repository)
+    - [Install development version using master branch](#install-development-version-using-master-branch)
+    - [Custom configuration for tika](#custom-configuration-for-tika)
+  - [Upgrading](#upgrading)
+  - [Configuration](#configuration)
+    - [Deprecated](#deprecated)
+  - [Contributing](#contributing)
+  - [More Information](#more-information)
+  - [Authors](#authors)
+- [License](#license)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- Use this to update TOC: -->
@@ -85,21 +89,38 @@ while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAI
 * Install it:
   - with Helm 3: `helm install tika . --set image.tag=latest-full`
 
+### Custom configuration for tika
+
+To use custom [configuration]( https://tika.apache.org/2.9.1/configuring.html) values for apache tika, use the `tikaConfig` key in the `values.yaml`.
+Example:
+```
+tikaConfig: |
+  <?xml version="1.0" encoding="UTF-8"?>
+  <properties>
+    <parsers>
+      <!-- Default Parser for most things, except for 2 mime types -->
+      <parser class="org.apache.tika.parser.DefaultParser">
+        <mime-exclude>image/jpeg</mime-exclude>
+        <mime-exclude>application/pdf</mime-exclude>
+      </parser>
+    </parsers>
+  </properties>
+```
 ## Upgrading
 
 Please check `artifacthub.io/changes` in `Chart.yaml` before upgrading.
 
 ## Configuration
 
-| Parameter                      | Description                                                                                                                                                                  | Default                            |
-|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
-| `...`             | ...                                                                                        | ...               |
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `...`     | ...         | ...     |
 
 ### Deprecated
 
-| Parameter            | Description                                                                                                                                          | Default |
-|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|---------|
-| `...`           | ...                                                                                                    | `...`    |
+| Parameter | Description | Default |
+| --------- | ----------- | ------- |
+| `...`     | ...         | `...`   |
 
 ## Contributing
 

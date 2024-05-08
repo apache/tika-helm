@@ -22,6 +22,10 @@ metadata:
   name: {{ include "tika-helm.fullname" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.service.annotations }}
+      {{- toYaml . | nindent 4 }}
+      {{- end }}
 spec:
   type: {{ .Values.service.type }}
   ports:

@@ -16,22 +16,12 @@
 # under the License.
 
 ---
+{{- if .Values.tikaConfig }}
 apiVersion: v1
-kind: Service
+kind: ConfigMap
 metadata:
-  name: {{ include "tika-helm.fullname" . }}
-  labels:
-    {{- include "tika-helm.labels" . | nindent 4 }}
-  annotations:
-    {{- with .Values.service.annotations }}
-      {{- toYaml . | nindent 4 }}
-      {{- end }}
-spec:
-  type: {{ .Values.service.type }}
-  ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
-      protocol: TCP
-      name: http
-  selector:
-    {{- include "tika-helm.selectorLabels" . | nindent 4 }}
+  name: {{ .Chart.Name }}-config
+data:
+  tika-config.xml: |-
+{{ .Values.tikaConfig | indent 4 }}
+{{- end }}

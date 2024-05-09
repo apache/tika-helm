@@ -35,8 +35,10 @@ jobs:
           wget https://github.com/FairwindsOps/pluto/releases/download/v${{ env.PLUTO_VERSION }}/pluto_${{ env.PLUTO_VERSION }}_linux_amd64.tar.gz -O - | tar -xz
           mv pluto /usr/local/bin/pluto
           chmod +x /usr/local/bin/pluto
+        shell: bash
       - name: Set up Helm
         uses: azure/setup-helm@v4.2.0
       - name: verify helm chart
         run: |
           helm template . | pluto detect -omarkdown - >> $GITHUB_STEP_SUMMARY
+        shell: bash

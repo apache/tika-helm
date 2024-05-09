@@ -41,4 +41,4 @@ jobs:
           version: v3.10.0
       - name: verify helm chart
         run: |
-          helm template . | pluto detect -omarkdown >> $GITHUB_STEP_SUMMARY
+          helm template . | pluto detect -omarkdown - >> $GITHUB_STEP_SUMMARY

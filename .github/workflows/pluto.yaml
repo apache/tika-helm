@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: Pluto deprecated checks
+name: Use Pluto to check helm chart for resources using deprecated k8s APIs
 
 on:
   push:
@@ -25,10 +25,20 @@ on:
 jobs:
   pluto_detect:
     runs-on: ubuntu-latest
+    env:
+      PLUTO_VERSION: 15.19.1
     steps:
-      - name: Check out the repo
-        uses: actions/checkout@v4.1.0
-      - name: Check deprecated k8s APIs
-        uses: eddykaya/helm-pluto-github-action@0.1.2
+      - name: Checkout
+        uses: actions/checkout@v4.2.0
+      - name: Download Pluto
+        run: |
+          wget https://github.com/FairwindsOps/pluto/releases/download/v${{ $PLUTO_VERSION }}/pluto_${{ $PLUTO_VERSION }}_linux_amd64.tar.gz -O - | tar -xz
+          mv pluto /usr/local/bin/pluto
+          chmod +x /usr/local/bin/pluto
+      - name: Set up Helm
+        uses: azure/setup-helm@v3
         with:
-          HELM_CHART_DIRECTORY: .
+          version: v3.10.0
+      - name: verify helm chart
+        run: |
+          helm template . | pluto detect -omarkdown >> $GITHUB_STEP_SUMMARY

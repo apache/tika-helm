@@ -45,11 +45,39 @@ jobs:
           if [[ -n "$changed" ]]; then
             echo "::set-output name=changed::true"
           fi
+        shell: bash
       - name: Run chart-testing (lint)
         run: ct lint --target-branch ${{ github.event.repository.default_branch }} --charts .
+        shell: bash
       - name: Create kind cluster
         uses: helm/kind-action@v1.10.0
         if: steps.list-changed.outputs.changed == 'true'
+      - name: Uninstall helm-unittest if present
+        run: |
+          helm plugin uninstall unittest >/dev/null 2>/dev/null \
+            || echo "Failed to uninstall plugin, assuming it's not present."
+        shell: bash
+      - name: Install latest helm-unittest
+        run: |
+          echo "Installing latest version of helm-unittest"
+          helm plugin install https://github.com/helm-unittest/helm-unittest >/dev/null 2>/dev/null
+        shell: bash
+      - name: Assemble list of chart directories to test
+        run: |
+          tr ' ' '\n' <<< . | grep -v '^$' > charts-to-test || true
+          find . -type f -name 'Chart.yaml' -exec dirname {} \; > all-charts
+          [ -z . ] && mv all-charts charts-to-test || true
+        shell: bash
+      - name: Fetch chart dependencies
+        run: |
+          for chart in $(cat charts-to-test); do
+            helm dependency update "$chart" >/dev/null
+          done
+        shell: bash
+      - name: Run unit tests
+        run: helm unittest --color $(cat charts-to-test)
+        shell: bash
       - name: Run chart-testing (install)
-        run: ct install --target-branch ${{ github.event.repository.default_branch }} --charts .
         if: steps.list-changed.outputs.changed == 'true'
+        run: ct install --target-branch ${{ github.event.repository.default_branch }} --charts .
+        shell: bash

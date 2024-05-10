@@ -99,7 +99,7 @@ resources:
     memory: 1500Mi
 
 autoscaling:
-  apiVersion: autoscaling/v2beta1
+  apiVersion: autoscaling/v2
   enabled: false
   minReplicas: 1
   maxReplicas: 100

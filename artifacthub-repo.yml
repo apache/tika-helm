@@ -26,7 +26,7 @@
 # when the hash of the last commit in the branch you set up changes. This does
 # NOT apply to ownership claim operations, which are processed immediately.
 #
-repositoryID: apache-tika
+repositoryID: 01c1e88b-cba6-4430-9e05-05f02d3f805b
 owners:
   - name: Apache Tika Committers
     email: dev@tika.apache.org

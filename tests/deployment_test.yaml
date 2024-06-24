@@ -60,3 +60,42 @@ tests:
               timeoutSeconds: 30
               failureThreshold: 20
               periodSeconds: 5
+  - it: should allow tcp probe
+    set:
+      image.tag: latest
+      readinessProbe.scheme: tcp
+      livenessProbe.scheme: tcp
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+      - matchRegex:
+          path: metadata.name
+          pattern: RELEASE-NAME-tika
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: apache/tika:latest
+      - lengthEqual:
+          path: spec.template.spec.containers
+          count: 1
+      - isSubset:
+          path: spec.template.spec.containers[0]
+          content:
+            livenessProbe:
+              tcpSocket:
+                port: 9998
+              initialDelaySeconds: 15
+              timeoutSeconds: 30
+              failureThreshold: 20
+              periodSeconds: 5
+      - isSubset:
+          path: spec.template.spec.containers[0]
+          content:
+            readinessProbe:
+              tcpSocket:
+                port: 9998
+              initialDelaySeconds: 15
+              timeoutSeconds: 30
+              failureThreshold: 20
+              periodSeconds: 5

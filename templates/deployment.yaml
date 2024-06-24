@@ -75,19 +75,29 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           livenessProbe:
+            {{- if eq (lower .Values.livenessProbe.scheme) "tcp" }}
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            {{- else }}
             httpGet:
               path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{else}}/{{end}}
               port: {{ .Values.service.port }}
               scheme: {{ .Values.livenessProbe.scheme | default "http" }}
+            {{- end }}
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 15 }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 30 }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 20 }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 5 }}
           readinessProbe:
+            {{- if eq (lower .Values.readinessProbe.scheme) "tcp" }}
+            tcpSocket:
+              port: {{ .Values.service.port }}
+            {{- else }}
             httpGet:
               path: {{if .Values.config.base_url }}{{- with urlParse (tpl .Values.config.base_url .) }}{{ .path }}{{end}}{{else}}/{{end}}
               port: {{ .Values.service.port  }}
               scheme: {{ .Values.readinessProbe.scheme | default "http" }}
+            {{- end }}
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 15 }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 30 }}
             failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 20 }}

@@ -3,6 +3,8 @@ tika-helm
 
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/apache-tika)](https://artifacthub.io/packages/search?repo=apache-tika)
 
+<div class="artifacthub-widget" data-url="https://artifacthub.io/packages/helm/apache-tika/tika" data-theme="light" data-header="true" data-stars="true" data-responsive="false"><blockquote><p lang="en" dir="ltr"><b>tika</b>: The official Helm chart to deploy Apache Tika on Kubernetes</p>&mdash; Open in <a href="https://artifacthub.io/packages/helm/apache-tika/tika">Artifact Hub</a></blockquote></div><script async src="https://artifacthub.io/artifacthub-widget.js"></script>
+
 A [Helm chart][] to deploy [Apache Tika][] on [Kubernetes][].
 
 <img src="https://tika.apache.org/tika.png" width="300" />

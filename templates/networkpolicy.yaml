@@ -36,7 +36,7 @@ spec:
       {{- if not .Values.networkPolicy.allowExternal }}
       from:
         - podSelector:
-          matchLabels:
-            {{ template "tika-helm.fullname" . }}-client: "true"
+            matchLabels:
+              {{ template "tika-helm.fullname" . }}-client: "true"
       {{- end }}
 {{- end }}

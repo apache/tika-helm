@@ -21,6 +21,7 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: {{ template "tika-helm.fullname" . }}
+  namespace: {{ include "tika-helm.namespace" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
 spec:

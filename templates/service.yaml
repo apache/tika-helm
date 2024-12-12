@@ -20,6 +20,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "tika-helm.fullname" . }}
+  namespace: {{ include "tika-helm.namespace" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
   annotations:

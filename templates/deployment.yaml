@@ -20,6 +20,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "tika-helm.fullname" . }}
+  namespace: {{ include "tika-helm.namespace" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
 spec:

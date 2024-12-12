@@ -20,6 +20,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "tika-helm.fullname" . }}-test-connection"
+  namespace: {{ include "tika-helm.namespace" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
   annotations:

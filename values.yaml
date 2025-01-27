@@ -23,12 +23,19 @@ image:
   repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: '3.0.0.0-full'
+  tag: "3.0.0.0-full"
 
 imagePullSecrets: []
-nameOverride: ''
-fullnameOverride: ''
-namespaceOverride: ''
+nameOverride: ""
+fullnameOverride: ""
+namespaceOverride: ""
+
+# Environment variables to set in the container
+# For example:
+# env:
+#   - name: SOME_VAR
+#     value: "some value"
+# env: []
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -37,7 +44,7 @@ serviceAccount:
   annotations: {}
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
-  name: ''
+  name: ""
 
 podAnnotations: {}
 
@@ -93,10 +100,10 @@ resources:
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
   limits:
-    cpu: '2'
+    cpu: "2"
     memory: 2000Mi
   requests:
-    cpu: '1'
+    cpu: "1"
     memory: 1500Mi
 
 autoscaling:
@@ -121,7 +128,7 @@ networkPolicy:
   allowExternal: false
 
 config:
-  base_url: 'http://localhost/'
+  base_url: "http://localhost/"
 # Use the below block to use custom tika-config.xml.
 # Refer https://tika.apache.org/2.9.1/configuring.html to know more about configuring apache-tika
 # tikaConfig: |

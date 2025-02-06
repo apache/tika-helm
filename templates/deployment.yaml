@@ -60,6 +60,10 @@ spec:
           {{- if .Values.tikaConfig }}
           args: ["-c" , "/tika-config/tika-config.xml"]
           {{- end }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"

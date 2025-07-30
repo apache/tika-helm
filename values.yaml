@@ -120,6 +120,8 @@ tolerations: []
 
 affinity: {}
 
+topologySpreadConstraints: []
+
 networkPolicy:
   # networkPolicy.enabled -- Create a network policy to restrict traffic to pods
   # within the same namespace that include the label `<release>-client: true`.

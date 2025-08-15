@@ -23,7 +23,7 @@ image:
   repository: apache/tika
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "3.0.0.0-full"
+  tag: "3.2.2.0-full"
 
 imagePullSecrets: []
 nameOverride: ""

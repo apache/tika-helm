@@ -19,8 +19,8 @@
 ---
 apiVersion: v2
 name: tika
-appVersion: "3.0.0.0-full"
-version: "3.0.3-full"
+appVersion: "3.2.2.0-full"
+version: "3.2.2"
 description: The official Helm chart for Apache Tika
 type: application
 keywords:
@@ -31,7 +31,6 @@ keywords:
 home: https://tika.apache.org
 sources:
   - https://github.com/apache/tika-helm
-  - https://github.com/apache/tika
 maintainers:
   - name: lewismc
     email: lewismc@apache.org
@@ -44,19 +43,24 @@ maintainers:
     url: https://github.com/frascu
   - name: euven
     url: https://github.com/euven
+  - name: ps0uth
+    url: https://github.com/ps0uth
+  - name: ahilmathew
+    url: https://github.com/ahilmathew
+  - name: aidanthewiz
+    url: https://github.com/aidanthewiz
+  - name: bartek
+    url: https://github.com/bartek
+  - name: CiraciNicolo
+    url: https://github.com/CiraciNicolo
+  - name: amalucelli
+    url: https://github.com/amalucelli
+  - name: thatmlopsguy
+    url: https://github.com/thatmlopsguy
 icon: https://tika.apache.org/tika.png
 deprecated: false
 annotations:
   artifacthub.io/category: integration-delivery
-  # supported kinds are added, changed, deprecated, removed, fixed and security
-  artifacthub.io/changes: |
-    - kind: added
-      description: TIKA-4227 Register tika-helm Chart in artifacthub.io
-      links:
-        - name: Jira Issue
-          url: https://issues.apache.org/jira/browse/TIKA-4227
-        - name: GitHub PR
-          url: https://github.com/apache/tika-helm/pull/16
   artifacthub.io/containsSecurityUpdates: "false"
   artifacthub.io/license: Apache-2.0
   artifacthub.io/links: |

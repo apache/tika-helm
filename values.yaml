@@ -1,11 +1,12 @@
+---
 # Licensed to the Apache Software Foundation (ASF) under one or more
-# contributor license agreements.  See the NOTICE file distributed with
+# contributor license agreements. See the NOTICE file distributed with
 # this work for additional information regarding copyright ownership.
 # The ASF licenses this file to You under the Apache License, Version 2.0
 # (the "License"); you may not use this file except in compliance with
-# the License.  You may obtain a copy of the License at
+# the License. You may obtain a copy of the License at
 #
-#     http://www.apache.org/licenses/LICENSE-2.0
+# http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,18 +18,28 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# -- Number of Tika pod replicas to deploy
 replicaCount: 1
 
 image:
+  # -- Docker image repository for Apache Tika
   repository: apache/tika
+  # -- Image pull policy for the Tika container
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "3.2.2.0-full"
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: '3.2.2.0-full'
 
+# -- Secrets for pulling images from a private registry
 imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
-namespaceOverride: ""
+
+# -- Override the name of the chart
+nameOverride: ''
+
+# -- Override the full name of the release
+fullnameOverride: ''
+
+# -- Override the namespace for the release
+namespaceOverride: ''
 
 # Environment variables to set in the container
 # For example:
@@ -38,111 +49,147 @@ namespaceOverride: ""
 # env: []
 
 serviceAccount:
-  # Specifies whether a service account should be created
+  # -- Specifies whether a service account should be created
   create: true
-  # Annotations to add to the service account
+  # -- Annotations to add to the service account
   annotations: {}
-  # The name of the service account to use.
-  # If not set and create is true, a name is generated using the fullname template
-  name: ""
+  # -- The name of the service account to use; if not set
+  # and create is true, a name is generated
+  name: ''
 
+# -- Annotations to add to the Tika pods
 podAnnotations: {}
 
 podSecurityContext:
+  # -- Security context for the pod
   {}
   # fsGroup: 2000
 
 securityContext:
+  # -- Allow privilege escalation for the container
   allowPrivilegeEscalation: true
   capabilities:
+    # -- Capabilities to drop for the container
     drop:
       - ALL
+  # -- Run container with read-only root filesystem
   readOnlyRootFilesystem: true
+  # -- Run container as non-root user
   runAsNonRoot: true
+  # -- User ID to run the container
   runAsUser: 35002
+  # -- Group ID to run the container
   runAsGroup: 35002
 
 service:
+  # -- Type of Kubernetes service to expose Tika
   type: ClusterIP
+  # -- Port for the Tika service
   port: 9998
 
 ingress:
+  # -- Enable ingress for the Tika service
   enabled: false
+  # -- Annotations for the ingress resource
   annotations:
     {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
+    # -- Hostnames for the ingress
     - host: chart-example.local
       paths: []
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+  # -- TLS configuration for the ingress
+  tls:
+    []
+    # - secretName: chart-example-tls
+    #   hosts:
+    #     - chart-example.local
 
 livenessProbe:
+  # -- Initial delay before starting liveness probe (seconds)
   initialDelaySeconds: 15
+  # -- Timeout for liveness probe (seconds)
   timeoutSeconds: 30
+  # -- Number of failed liveness probes before restarting the pod
   failureThreshold: 20
+  # -- Interval between liveness probes (seconds)
   periodSeconds: 5
+  # -- Scheme for liveness probe (HTTP or HTTPS)
   scheme: HTTP
 
 readinessProbe:
+  # -- Initial delay before starting readiness probe (seconds)
   initialDelaySeconds: 15
+  # -- Timeout for readiness probe (seconds)
   timeoutSeconds: 30
+  # -- Number of failed readiness probes before marking pod as not ready
   failureThreshold: 20
+  # -- Interval between readiness probes (seconds)
   periodSeconds: 5
+  # -- Scheme for readiness probe (HTTP or HTTPS)
   scheme: HTTP
 
 resources:
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # -- Resource limits for the Tika container
   limits:
-    cpu: "2"
+    cpu: '2'
     memory: 2000Mi
+  # -- Resource requests for the Tika container
   requests:
-    cpu: "1"
+    cpu: '1'
     memory: 1500Mi
 
 autoscaling:
+  # -- API version for the HorizontalPodAutoscaler
   apiVersion: autoscaling/v2
+  # -- Enable autoscaling for Tika pods
   enabled: false
+  # -- Minimum number of replicas
   minReplicas: 1
+  # -- Maximum number of replicas
   maxReplicas: 100
+  # -- Target CPU utilization percentage for autoscaling
   targetCPUUtilizationPercentage: 80
+  # -- Target memory utilization percentage for autoscaling
   targetMemoryUtilizationPercentage: 80
 
+# -- Node selector for pod scheduling
 nodeSelector: {}
 
+# -- Tolerations for pod scheduling
 tolerations: []
 
+# -- Affinity rules for pod scheduling
 affinity: {}
 
+# -- Control how Pods are spread across the cluster
 topologySpreadConstraints: []
 
 networkPolicy:
-  # networkPolicy.enabled -- Create a network policy to restrict traffic to pods
-  # within the same namespace that include the label `<release>-client: true`.
+  # -- Create a network policy to restrict traffic to pods within the
+  # same namespace that include the label `<release>-client: true`.
   enabled: false
-  # networkPolicy.allowExternal -- Don't require a "-client" label for connections.
+  # -- Allow external traffic without requiring a "-client" label
   allowExternal: false
 
 config:
-  base_url: "http://localhost/"
-# Use the below block to use custom tika-config.xml.
-# Refer https://tika.apache.org/2.9.1/configuring.html to know more about configuring apache-tika
+  # -- Base URL for the Tika service
+  base_url: 'http://localhost/'
+
+# -- Custom Tika configuration (tika-config.xml)
+# Refer https://tika.apache.org/2.9.1/configuring.html for details
 # tikaConfig: |
 #   <?xml version="1.0" encoding="UTF-8"?>
 #   <properties>
 #     <parsers>
-#       <!-- Default Parser for most things, except for 2 mime types, and never
-#           use the Executable Parser -->
+#       <!-- Default Parser for most things, except for 2 mime
+#         types, and never use the Executable Parser -->
 #       <parser class="org.apache.tika.parser.DefaultParser">
 #         <mime-exclude>image/jpeg</mime-exclude>
 #         <mime-exclude>application/pdf</mime-exclude>
-#         <parser-exclude class="org.apache.tika.parser.executable.ExecutableParser"/>
+#         <parser-exclude
+#           class="org.apache.tika.parser.executable.ExecutableParser"/>
 #       </parser>
 #       <!-- Use a different parser for PDF -->
 #       <parser class="org.apache.tika.parser.EmptyParser">

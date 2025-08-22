@@ -31,10 +31,17 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Helm Docs
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: norwoodj/helm-docs
+          VERSION: latest
         run: |
           set -euo pipefail
 
-          VERSION=latest
+          if [[ "$VERSION" == latest ]]; then
+            VERSION=
+          fi
 
           case "${{ runner.os }}" in
             Linux)

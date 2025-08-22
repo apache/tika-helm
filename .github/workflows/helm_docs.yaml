@@ -86,7 +86,6 @@ jobs:
           echo "$DEST" >>$GITHUB_PATH
       - name: Run helm-docs
         run: |
-          cat values.yaml
           helm-docs
           if git diff --exit-code; then
             echo "Documentation up to date"

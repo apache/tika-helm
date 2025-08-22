@@ -50,7 +50,7 @@ jobs:
         run: ct lint --target-branch ${{ github.event.repository.default_branch }} --charts .
         shell: bash
       - name: Create kind cluster
-        uses: helm/kind-action@v0025e74a8c7512023d06dc019c617aa3cf561fde
+        uses: helm/kind-action@0025e74a8c7512023d06dc019c617aa3cf561fde
         if: steps.list-changed.outputs.changed == 'true'
       - name: Uninstall helm-unittest if present
         run: |

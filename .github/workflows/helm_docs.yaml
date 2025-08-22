@@ -87,7 +87,7 @@ jobs:
       - name: Run helm-docs
         run: |
           cat values.yaml
-          helm-docs -x
+          helm-docs
           if git diff --exit-code; then
             echo "Documentation up to date"
           else

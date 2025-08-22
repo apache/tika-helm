@@ -34,9 +34,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          if [[ "$VERSION" == latest ]]; then
-            VERSION=
-          fi
+          VERSION=latest
 
           case "${{ runner.os }}" in
             Linux)

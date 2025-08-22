@@ -19,18 +19,17 @@ will work with the version of Tika you are installing.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [tika-helm](#tika-helm)
-  - [Installing](#installing)
-    - [Install released version using Helm repository](#install-released-version-using-helm-repository)
-    - [Install development version using master branch](#install-development-version-using-master-branch)
-    - [Custom configuration for tika](#custom-configuration-for-tika)
-  - [Upgrading](#upgrading)
-  - [Configuration](#configuration)
-    - [Deprecated](#deprecated)
-  - [Contributing](#contributing)
-  - [More Information](#more-information)
-  - [Authors](#authors)
+- [Installing](#installing)
+  - [Install released version using Helm repository](#install-released-version-using-helm-repository)
+  - [Install development version using main branch](#install-development-version-using-main-branch)
+  - [Custom configuration for tika](#custom-configuration-for-tika)
+- [Upgrading](#upgrading)
+- [Values](#values)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [More Information](#more-information)
 - [License](#license)
+- [Maintainers](#maintainers)
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 <!-- Use this to update TOC: -->
@@ -70,7 +69,7 @@ while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAI
 ```
 ... this should keep `kubectl` reconnecting on connection lost.
 
-### Install development version using master branch
+### Install development version using main branch
 
 * Clone the git repo: `git clone git@github.com:apache/tika-helm.git`
 
@@ -122,7 +121,7 @@ For more information on Apache Tika, go to the official [Apache Tika][] project 
 
 For more information on the Apache Software Foundation, go to the [Apache Software Foundation][] website.
 
-# License
+## License
 The code is licensed permissively under the [Apache License v2.0][].
 
 {{ template "chart.maintainersSection" . }}

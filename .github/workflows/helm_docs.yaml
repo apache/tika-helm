@@ -31,7 +31,54 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup Helm Docs
-        uses: gabe565/setup-helm-docs-action@v1.0.4
+        run: |
+          set -euo pipefail
+
+          if [[ "$VERSION" == latest ]]; then
+            VERSION=
+          fi
+
+          case "${{ runner.os }}" in
+            Linux)
+              OS=linux
+              FILENAME=helm-docs
+              ;;
+            macOS)
+              OS=darwin
+              FILENAME=helm-docs
+              ;;
+            Windows)
+              OS=windows
+              FILENAME=helm-docs.exe
+              ;;
+          esac
+
+          RELEASE="$(gh release view --json=name,assets $VERSION)"
+          VERSION="$(jq -r '.name' <<<"$RELEASE")"
+          echo "version=$VERSION" >>$GITHUB_OUTPUT
+          echo "Installing helm-docs $VERSION..."
+
+          DEST="$RUNNER_TEMP/helm-docs"
+          ASSET="$(jq -r --arg OS "$OS" \
+            '.assets[].name | select(ascii_downcase | test($OS + "_(amd64|x86_64).(tar.gz|zip)$"))' \
+            <<<"$RELEASE" \
+          )"
+
+          echo "Downloading $ASSET"
+          mkdir -p "$DEST"
+          cd "$DEST"
+          case "$ASSET" in
+            *.tar.gz)
+              gh release download "$VERSION" --pattern="$ASSET" --output=- | tar -xzf - "$FILENAME" ;;
+            *.zip)
+              gh release download "$VERSION" --pattern="$ASSET"
+              unzip -o "$ASSET" "$FILENAME"
+              rm "$ASSET"
+              ;;
+            *)
+              echo Invalid file type; exit 1;;
+          esac
+          echo "$DEST" >>$GITHUB_PATH
       - name: Run helm-docs
         run: |
           helm-docs -x

@@ -6,7 +6,7 @@ tika-helm
 ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
 ![AppVersion: 3.2.2.0-full](https://img.shields.io/badge/AppVersion-3.2.2.0--full-informational?style=flat-square)
 
-<div class="artifacthub-widget" data-url="https://artifacthub.io/packages/helm/apache-tika/tika" data-theme="dark" data-header="true" data-stars="true" data-responsive="true"><blockquote><p lang="en" dir="ltr"><b>tika</b>: The official Helm chart for Apache Tika</p>&mdash; Open in <a href="https://artifacthub.io/packages/helm/apache-tika/tika">Artifact Hub</a></blockquote></div><script async src="https://artifacthub.io/artifacthub-widget.js"></script>
+<div class="artifacthub-widget" data-url="https://artifacthub.io/packages/helm/apache-tika/tika" data-theme="dark" data-header="true" data-stars="true" data-responsive="true"><blockquote><p lang="en" dir="ltr"><b>tika</b>: The official Helm chart for Apache Tika</p>&mdash; Open in <a href="https://artifacthub.io/packages/helm/apache-tika/tika">Artifact Hub</a></blockquote></div>
 
 <img src="https://tika.apache.org/tika.png" width="300" />
 

@@ -182,6 +182,9 @@ config:
 # tikaConfig: |
 #   <?xml version="1.0" encoding="UTF-8"?>
 #   <properties>
+#     <mtrandata>
+#       <mime-table-path>/tika-config/custom-mimetypes.xml</mime-table-path>
+#     </mtrandata>
 #     <parsers>
 #       <!-- Default Parser for most things, except for 2 mime
 #         types, and never use the Executable Parser -->
@@ -197,3 +200,14 @@ config:
 #       </parser>
 #     </parsers>
 #   </properties>
+# additionalConfigs:
+#   custom-mimetypes.xml: |
+#     <?xml version="1.0" encoding="UTF-8"?>
+#     <mime-info>
+#       <mime-type type="application/pdf">
+#         <magic priority="80">
+#           <match value="%PDF-" type="string" offset="0:8192"/>
+#         </magic>
+#         <glob pattern="*.pdf"/>
+#       </mime-type>
+#     </mime-info>

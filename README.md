@@ -80,14 +80,10 @@ while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAI
 
 To use custom [configuration]( https://tika.apache.org/2.9.1/configuring.html) values for apache tika, use the `tikaConfig` key in the `values.yaml`.
 Example:
-
 ```
 tikaConfig: |
   <?xml version="1.0" encoding="UTF-8"?>
   <properties>
-    <mtrandata>
-      <mime-table-path>/tika-config/custom-mimetypes.xml</mime-table-path>
-    </mtrandata>
     <parsers>
       <!-- Default Parser for most things, except for 2 mime types -->
       <parser class="org.apache.tika.parser.DefaultParser">
@@ -96,20 +92,7 @@ tikaConfig: |
       </parser>
     </parsers>
   </properties>
-
-additionalConfigs:
-  custom-mimetypes.xml: |
-    <?xml version="1.0" encoding="UTF-8"?>
-    <mime-info>
-      <mime-type type="application/pdf">
-        <magic priority="80">
-          <match value="%PDF-" type="string" offset="0:8192"/>
-        </magic>
-        <glob pattern="*.pdf"/>
-      </mime-type>
-    </mime-info>
 ```
-
 ## Upgrading
 
 Please check `artifacthub.io/changes` in `Chart.yaml` before upgrading.

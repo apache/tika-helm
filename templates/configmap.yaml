@@ -16,13 +16,18 @@
 # under the License.
 
 ---
-{{- if .Values.tikaConfig }}
+{{- if or .Values.tikaConfig .Values.additionalConfigs }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .Chart.Name }}-config
   namespace: {{ include "tika-helm.namespace" . }}
 data:
+  {{- if .Values.tikaConfig }}
   tika-config.xml: |-
 {{ .Values.tikaConfig | indent 4 }}
+  {{- end }}
+  {{- if .Values.additionalConfigs }}
+{{ toYaml .Values.additionalConfigs | indent 2 }}
+  {{- end }}
 {{- end }}

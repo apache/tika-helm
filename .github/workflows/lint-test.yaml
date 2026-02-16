@@ -71,7 +71,7 @@ jobs:
           done
         shell: bash
       - name: Run unit tests
-        run: helm unittest --color=always $(cat charts-to-test)
+        run: helm unittest --color $(cat charts-to-test)
         shell: bash
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'

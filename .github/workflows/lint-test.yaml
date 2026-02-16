@@ -48,8 +48,13 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
         if: steps.list-changed.outputs.changed == 'true'
+      - name: Install helm-unittest
+        run: |
+          helm plugin uninstall unittest 2>/dev/null || true
+          helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest
+        shell: bash
       - name: Run unit tests
-        run: helm unittest .
+        run: helm unittest --color .
         shell: bash
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'

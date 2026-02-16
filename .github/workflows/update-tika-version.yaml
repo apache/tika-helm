@@ -41,6 +41,7 @@ jobs:
           if [ -n "${{ github.event.inputs.tag }}" ]; then
             NEW_TAG="${{ github.event.inputs.tag }}"
           else
+<<<<<<< HEAD
             RESPONSE=$(curl -sf "https://hub.docker.com/v2/repositories/apache/tika/tags?page_size=10&ordering=last_updated") || {
               echo "::error::Failed to fetch tags from DockerHub API"
               exit 1
@@ -50,6 +51,10 @@ jobs:
             echo "Tags returned by DockerHub: $ALL_TAGS"
 
             NEW_TAG=$(echo "$ALL_TAGS" \
+=======
+            NEW_TAG=$(curl -s "https://hub.docker.com/v2/repositories/apache/tika/tags?page_size=10&ordering=-last_updated" \
+              | jq -r '.results[].name' \
+>>>>>>> main
               | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+-full$' \
               | sort -V \
               | tail -1)

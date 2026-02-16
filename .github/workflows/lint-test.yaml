@@ -27,17 +27,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
       - name: Set up Helm
-        uses: azure/setup-helm@v4.2.0
-      - uses: actions/setup-python@v5.1.0
-        with:
-          python-version: '3.x'
-          check-latest: true
+        uses: azure/setup-helm@v4
       - name: Set up chart-testing
-        uses: helm/chart-testing-action@0d28d3144d3a25ea2cc349d6e59901c4ff469b3b
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
       - name: Run chart-testing (list-changed)
         id: list-changed
         run: |
@@ -50,32 +46,15 @@ jobs:
         run: ct lint --target-branch ${{ github.event.repository.default_branch }} --charts .
         shell: bash
       - name: Create kind cluster
-        uses: helm/kind-action@0025e74a8c7512023d06dc019c617aa3cf561fde
+        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
         if: steps.list-changed.outputs.changed == 'true'
-      - name: Uninstall helm-unittest if present
+      - name: Install helm-unittest
         run: |
-          helm plugin uninstall unittest >/dev/null 2>/dev/null \
-            || echo "Failed to uninstall plugin, assuming it's not present."
-        shell: bash
-      - name: Install latest helm-unittest
-        run: |
-          echo "Installing latest version of helm-unittest"
-          helm plugin install https://github.com/helm-unittest/helm-unittest >/dev/null 2>/dev/null
-        shell: bash
-      - name: Assemble list of chart directories to test
-        run: |
-          tr ' ' '\n' <<< . | grep -v '^$' > charts-to-test || true
-          find . -type f -name 'Chart.yaml' -exec dirname {} \; > all-charts
-          [ -z . ] && mv all-charts charts-to-test || true
-        shell: bash
-      - name: Fetch chart dependencies
-        run: |
-          for chart in $(cat charts-to-test); do
-            helm dependency update "$chart" >/dev/null
-          done
+          helm plugin uninstall unittest 2>/dev/null || true
+          helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest
         shell: bash
       - name: Run unit tests
-        run: helm unittest --color $(cat charts-to-test)
+        run: helm unittest .
         shell: bash
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'

@@ -1,0 +1,119 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Update Tika Docker Image Version
+
+on:
+  schedule:
+    - cron: '0 6 * * *' # daily at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tika Docker image tag (e.g. 3.3.0.0-full)'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-tika-version:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Determine new tag
+        id: new-tag
+        run: |
+          if [ -n "${{ github.event.inputs.tag }}" ]; then
+            NEW_TAG="${{ github.event.inputs.tag }}"
+          else
+            NEW_TAG=$(curl -s "https://hub.docker.com/v2/repositories/apache/tika/tags?page_size=10&ordering=-last_updated" \
+              | jq -r '.results[].name' \
+              | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+-full$' \
+              | sort -V \
+              | tail -1)
+          fi
+
+          if [ -z "$NEW_TAG" ]; then
+            echo "::error::Could not determine the latest Tika Docker image tag"
+            exit 1
+          fi
+
+          echo "tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Read current appVersion
+        id: current
+        run: |
+          CURRENT=$(grep '^appVersion:' Chart.yaml | sed 's/appVersion: *"\(.*\)"/\1/')
+          echo "tag=$CURRENT" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Compare versions
+        id: compare
+        run: |
+          if [ "${{ steps.new-tag.outputs.tag }}" = "${{ steps.current.outputs.tag }}" ]; then
+            echo "No update needed. Current version (${{ steps.current.outputs.tag }}) is already the latest."
+            echo "updated=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "Update available: ${{ steps.current.outputs.tag }} -> ${{ steps.new-tag.outputs.tag }}"
+            echo "updated=true" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+      - name: Derive chart version
+        if: steps.compare.outputs.updated == 'true'
+        id: chart-version
+        run: |
+          CHART_VERSION=$(echo "${{ steps.new-tag.outputs.tag }}" | sed 's/-full$//' | sed 's/\.[0-9]*$//')
+          echo "version=$CHART_VERSION" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Update version files
+        if: steps.compare.outputs.updated == 'true'
+        run: |
+          NEW_TAG="${{ steps.new-tag.outputs.tag }}"
+          CHART_VERSION="${{ steps.chart-version.outputs.version }}"
+          OLD_TAG="${{ steps.current.outputs.tag }}"
+
+          sed -i "s/^appVersion: \".*\"/appVersion: \"${NEW_TAG}\"/" Chart.yaml
+          sed -i "s/^version: \".*\"/version: \"${CHART_VERSION}\"/" Chart.yaml
+
+          sed -i "s/tag: '.*'/tag: '${NEW_TAG}'/" values.yaml
+
+          sed -i "s/\"default\": \"${OLD_TAG}\"/\"default\": \"${NEW_TAG}\"/" values.schema.json
+        shell: bash
+
+      - name: Create Pull Request
+        if: steps.compare.outputs.updated == 'true'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: auto-update/tika-${{ steps.new-tag.outputs.tag }}
+          commit-message: "Bump Apache Tika Docker image to ${{ steps.new-tag.outputs.tag }}"
+          title: "Bump Apache Tika Docker image to ${{ steps.new-tag.outputs.tag }}"
+          body: |
+            Automated version bump of the Apache Tika Docker image.
+
+            **Old version:** `${{ steps.current.outputs.tag }}`
+            **New version:** `${{ steps.new-tag.outputs.tag }}`
+            **Chart version:** `${{ steps.chart-version.outputs.version }}`
+
+            [View available tags on Docker Hub](https://hub.docker.com/r/apache/tika/tags)
+          labels: |
+            dependencies
+            automated

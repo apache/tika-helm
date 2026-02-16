@@ -2,9 +2,9 @@ tika-helm
 =========
 
 [![Artifact HUB](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/apache-tika)](https://artifacthub.io/packages/helm/apache-tika/tika)
-![Version: 3.2.2](https://img.shields.io/badge/Version-3.2.2-informational?style=flat-square)
+![Version: 3.2.3](https://img.shields.io/badge/Version-3.2.3-informational?style=flat-square)
 ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
-![AppVersion: 3.2.2.0-full](https://img.shields.io/badge/AppVersion-3.2.2.0--full-informational?style=flat-square)
+![AppVersion: 3.2.3.0-full](https://img.shields.io/badge/AppVersion-3.2.3.0--full-informational?style=flat-square)
 
 <div class="artifacthub-widget" data-url="https://artifacthub.io/packages/helm/apache-tika/tika" data-theme="dark" data-header="true" data-stars="true" data-responsive="true"><blockquote><p lang="en" dir="ltr"><b>tika</b>: The official Helm chart for Apache Tika</p>&mdash; Open in <a href="https://artifacthub.io/packages/helm/apache-tika/tika">Artifact Hub</a></blockquote></div>
 
@@ -227,7 +227,7 @@ false
 			<td>image.tag</td>
 			<td>string</td>
 			<td><pre lang="json">
-"3.2.2.0-full"
+"3.2.3.0-full"
 </pre>
 </td>
 			<td>Overrides the image tag whose default is the chart appVersion</td>

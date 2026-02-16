@@ -105,6 +105,24 @@ jobs:
           sed -i "s/\"default\": \"${OLD_TAG}\"/\"default\": \"${NEW_TAG}\"/" values.schema.json
         shell: bash
 
+      - name: Install and run helm-docs
+        if: steps.compare.outputs.updated == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: norwoodj/helm-docs
+        run: |
+          set -euo pipefail
+          RELEASE="$(gh release view --json=name,assets)"
+          VERSION="$(jq -r '.name' <<<"$RELEASE")"
+          echo "Installing helm-docs $VERSION..."
+          DEST="$RUNNER_TEMP/helm-docs"
+          ASSET="$(jq -r '.assets[].name | select(ascii_downcase | test("linux_(amd64|x86_64).tar.gz$"))' <<<"$RELEASE")"
+          mkdir -p "$DEST"
+          cd "$DEST"
+          gh release download "$VERSION" --pattern="$ASSET" --output=- | tar -xzf - helm-docs
+          ./helm-docs -c "$GITHUB_WORKSPACE"
+
       - name: Create Pull Request
         if: steps.compare.outputs.updated == 'true'
         uses: peter-evans/create-pull-request@v8

@@ -54,7 +54,7 @@ jobs:
           helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest
         shell: bash
       - name: Run unit tests
-        run: helm unittest --color .
+        run: helm unittest .
         shell: bash
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'

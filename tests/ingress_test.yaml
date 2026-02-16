@@ -20,10 +20,12 @@ templates:
   - ingress.yaml
 tests:
   - it: should pass
+    capabilities:
+      majorVersion: 1
+      minorVersion: 20
     set:
       image.tag: latest
       ingress.enabled: true
-      Capabilities.KubeVersion.GitVersion: 1.20
       ingress.tls:
         - secretName: chart-example-tls
           hosts:

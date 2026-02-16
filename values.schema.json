@@ -114,7 +114,7 @@
           "type": "string"
         },
         "tag": {
-          "default": "3.2.2.0-full",
+          "default": "3.2.3.0-full",
           "description": "Overrides the image tag whose default is the chart appVersion",
           "required": [],
           "title": "tag",

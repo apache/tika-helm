@@ -1,0 +1,628 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "affinity": {
+      "additionalProperties": false,
+      "description": "Affinity rules for pod scheduling",
+      "required": [],
+      "title": "affinity",
+      "type": "object"
+    },
+    "autoscaling": {
+      "additionalProperties": false,
+      "properties": {
+        "apiVersion": {
+          "default": "autoscaling/v2",
+          "description": "API version for the HorizontalPodAutoscaler",
+          "required": [],
+          "title": "apiVersion",
+          "type": "string"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable autoscaling for Tika pods",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "maxReplicas": {
+          "default": 100,
+          "description": "Maximum number of replicas",
+          "required": [],
+          "title": "maxReplicas",
+          "type": "integer"
+        },
+        "minReplicas": {
+          "default": 1,
+          "description": "Minimum number of replicas",
+          "required": [],
+          "title": "minReplicas",
+          "type": "integer"
+        },
+        "targetCPUUtilizationPercentage": {
+          "default": 80,
+          "description": "Target CPU utilization percentage for autoscaling",
+          "required": [],
+          "title": "targetCPUUtilizationPercentage",
+          "type": "integer"
+        },
+        "targetMemoryUtilizationPercentage": {
+          "default": 80,
+          "description": "Target memory utilization percentage for autoscaling",
+          "required": [],
+          "title": "targetMemoryUtilizationPercentage",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "apiVersion",
+        "enabled",
+        "minReplicas",
+        "maxReplicas",
+        "targetCPUUtilizationPercentage",
+        "targetMemoryUtilizationPercentage"
+      ],
+      "title": "autoscaling",
+      "type": "object"
+    },
+    "config": {
+      "additionalProperties": false,
+      "properties": {
+        "base_url": {
+          "default": "http://localhost/",
+          "description": "Base URL for the Tika service",
+          "required": [],
+          "title": "base_url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "base_url"
+      ],
+      "title": "config",
+      "type": "object"
+    },
+    "fullnameOverride": {
+      "default": "",
+      "description": "Override the full name of the release",
+      "required": [],
+      "title": "fullnameOverride",
+      "type": "string"
+    },
+    "global": {
+      "description": "Global values are values that can be accessed from any chart or subchart by exactly the same name.",
+      "required": [],
+      "title": "global",
+      "type": "object"
+    },
+    "image": {
+      "additionalProperties": false,
+      "properties": {
+        "pullPolicy": {
+          "default": "IfNotPresent",
+          "description": "Image pull policy for the Tika container",
+          "required": [],
+          "title": "pullPolicy",
+          "type": "string"
+        },
+        "repository": {
+          "default": "apache/tika",
+          "description": "Docker image repository for Apache Tika",
+          "required": [],
+          "title": "repository",
+          "type": "string"
+        },
+        "tag": {
+          "default": "3.2.2.0-full",
+          "description": "Overrides the image tag whose default is the chart appVersion",
+          "required": [],
+          "title": "tag",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repository",
+        "pullPolicy",
+        "tag"
+      ],
+      "title": "image",
+      "type": "object"
+    },
+    "imagePullSecrets": {
+      "description": "Secrets for pulling images from a private registry",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "imagePullSecrets",
+      "type": "array"
+    },
+    "ingress": {
+      "additionalProperties": false,
+      "properties": {
+        "annotations": {
+          "additionalProperties": false,
+          "description": "Annotations for the ingress resource",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Enable ingress for the Tika service",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        },
+        "hosts": {
+          "description": "kubernetes.io/ingress.class: nginx\nkubernetes.io/tls-acme: \"true\"",
+          "items": {
+            "anyOf": [
+              {
+                "additionalProperties": false,
+                "properties": {
+                  "host": {
+                    "default": "chart-example.local",
+                    "required": [],
+                    "title": "host",
+                    "type": "string"
+                  },
+                  "paths": {
+                    "items": {
+                      "required": []
+                    },
+                    "required": [],
+                    "title": "paths",
+                    "type": "array"
+                  }
+                },
+                "required": [
+                  "host",
+                  "paths"
+                ],
+                "type": "object"
+              }
+            ],
+            "required": []
+          },
+          "required": [],
+          "title": "hosts",
+          "type": "array"
+        },
+        "tls": {
+          "description": "TLS configuration for the ingress",
+          "items": {
+            "required": []
+          },
+          "required": [],
+          "title": "tls",
+          "type": "array"
+        }
+      },
+      "required": [
+        "enabled",
+        "annotations",
+        "hosts",
+        "tls"
+      ],
+      "title": "ingress",
+      "type": "object"
+    },
+    "livenessProbe": {
+      "additionalProperties": false,
+      "properties": {
+        "failureThreshold": {
+          "default": 20,
+          "description": "Number of failed liveness probes before restarting the pod",
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "initialDelaySeconds": {
+          "default": 15,
+          "description": "Initial delay before starting liveness probe (seconds)",
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 5,
+          "description": "Interval between liveness probes (seconds)",
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "scheme": {
+          "default": "HTTP",
+          "description": "Scheme for liveness probe (HTTP or HTTPS)",
+          "required": [],
+          "title": "scheme",
+          "type": "string"
+        },
+        "timeoutSeconds": {
+          "default": 30,
+          "description": "Timeout for liveness probe (seconds)",
+          "required": [],
+          "title": "timeoutSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "initialDelaySeconds",
+        "timeoutSeconds",
+        "failureThreshold",
+        "periodSeconds",
+        "scheme"
+      ],
+      "title": "livenessProbe",
+      "type": "object"
+    },
+    "nameOverride": {
+      "default": "",
+      "description": "Override the name of the chart",
+      "required": [],
+      "title": "nameOverride",
+      "type": "string"
+    },
+    "namespaceOverride": {
+      "default": "",
+      "description": "Override the namespace for the release",
+      "required": [],
+      "title": "namespaceOverride",
+      "type": "string"
+    },
+    "networkPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "allowExternal": {
+          "default": false,
+          "description": "Allow external traffic without requiring a \"-client\" label",
+          "required": [],
+          "title": "allowExternal",
+          "type": "boolean"
+        },
+        "enabled": {
+          "default": false,
+          "description": "Create a network policy to restrict traffic to pods within the\nsame namespace that include the label `\u003crelease\u003e-client: true`.",
+          "required": [],
+          "title": "enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "enabled",
+        "allowExternal"
+      ],
+      "title": "networkPolicy",
+      "type": "object"
+    },
+    "nodeSelector": {
+      "additionalProperties": false,
+      "description": "Node selector for pod scheduling",
+      "required": [],
+      "title": "nodeSelector",
+      "type": "object"
+    },
+    "podAnnotations": {
+      "additionalProperties": false,
+      "description": "Annotations to add to the Tika pods",
+      "required": [],
+      "title": "podAnnotations",
+      "type": "object"
+    },
+    "podSecurityContext": {
+      "additionalProperties": false,
+      "required": [],
+      "title": "podSecurityContext",
+      "type": "object"
+    },
+    "readinessProbe": {
+      "additionalProperties": false,
+      "properties": {
+        "failureThreshold": {
+          "default": 20,
+          "description": "Number of failed readiness probes before marking pod as not ready",
+          "required": [],
+          "title": "failureThreshold",
+          "type": "integer"
+        },
+        "initialDelaySeconds": {
+          "default": 15,
+          "description": "Initial delay before starting readiness probe (seconds)",
+          "required": [],
+          "title": "initialDelaySeconds",
+          "type": "integer"
+        },
+        "periodSeconds": {
+          "default": 5,
+          "description": "Interval between readiness probes (seconds)",
+          "required": [],
+          "title": "periodSeconds",
+          "type": "integer"
+        },
+        "scheme": {
+          "default": "HTTP",
+          "description": "Scheme for readiness probe (HTTP or HTTPS)",
+          "required": [],
+          "title": "scheme",
+          "type": "string"
+        },
+        "timeoutSeconds": {
+          "default": 30,
+          "description": "Timeout for readiness probe (seconds)",
+          "required": [],
+          "title": "timeoutSeconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "initialDelaySeconds",
+        "timeoutSeconds",
+        "failureThreshold",
+        "periodSeconds",
+        "scheme"
+      ],
+      "title": "readinessProbe",
+      "type": "object"
+    },
+    "replicaCount": {
+      "default": 1,
+      "description": "Number of Tika pod replicas to deploy",
+      "required": [],
+      "title": "replicaCount",
+      "type": "integer"
+    },
+    "resources": {
+      "additionalProperties": false,
+      "properties": {
+        "limits": {
+          "additionalProperties": false,
+          "description": "Resource limits for the Tika container",
+          "properties": {
+            "cpu": {
+              "default": "2",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "2000Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "limits",
+          "type": "object"
+        },
+        "requests": {
+          "additionalProperties": false,
+          "description": "Resource requests for the Tika container",
+          "properties": {
+            "cpu": {
+              "default": "1",
+              "required": [],
+              "title": "cpu",
+              "type": "string"
+            },
+            "memory": {
+              "default": "1500Mi",
+              "required": [],
+              "title": "memory",
+              "type": "string"
+            }
+          },
+          "required": [
+            "cpu",
+            "memory"
+          ],
+          "title": "requests",
+          "type": "object"
+        }
+      },
+      "required": [
+        "limits",
+        "requests"
+      ],
+      "title": "resources",
+      "type": "object"
+    },
+    "securityContext": {
+      "additionalProperties": false,
+      "properties": {
+        "allowPrivilegeEscalation": {
+          "default": true,
+          "description": "Allow privilege escalation for the container",
+          "required": [],
+          "title": "allowPrivilegeEscalation",
+          "type": "boolean"
+        },
+        "capabilities": {
+          "additionalProperties": false,
+          "properties": {
+            "drop": {
+              "description": "Capabilities to drop for the container",
+              "items": {
+                "anyOf": [
+                  {
+                    "required": [],
+                    "type": "string"
+                  }
+                ],
+                "required": []
+              },
+              "required": [],
+              "title": "drop",
+              "type": "array"
+            }
+          },
+          "required": [
+            "drop"
+          ],
+          "title": "capabilities",
+          "type": "object"
+        },
+        "readOnlyRootFilesystem": {
+          "default": true,
+          "description": "Run container with read-only root filesystem",
+          "required": [],
+          "title": "readOnlyRootFilesystem",
+          "type": "boolean"
+        },
+        "runAsGroup": {
+          "default": 35002,
+          "description": "Group ID to run the container",
+          "required": [],
+          "title": "runAsGroup",
+          "type": "integer"
+        },
+        "runAsNonRoot": {
+          "default": true,
+          "description": "Run container as non-root user",
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "default": 35002,
+          "description": "User ID to run the container",
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "allowPrivilegeEscalation",
+        "capabilities",
+        "readOnlyRootFilesystem",
+        "runAsNonRoot",
+        "runAsUser",
+        "runAsGroup"
+      ],
+      "title": "securityContext",
+      "type": "object"
+    },
+    "service": {
+      "additionalProperties": false,
+      "properties": {
+        "port": {
+          "default": 9998,
+          "description": "Port for the Tika service",
+          "required": [],
+          "title": "port",
+          "type": "integer"
+        },
+        "type": {
+          "default": "ClusterIP",
+          "description": "Type of Kubernetes service to expose Tika",
+          "required": [],
+          "title": "type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "port"
+      ],
+      "title": "service",
+      "type": "object"
+    },
+    "serviceAccount": {
+      "additionalProperties": false,
+      "description": "Environment variables to set in the container\nFor example:\nenv:\n  - name: SOME_VAR\n    value: \"some value\"\nenv: []",
+      "properties": {
+        "annotations": {
+          "additionalProperties": false,
+          "description": "Annotations to add to the service account",
+          "required": [],
+          "title": "annotations",
+          "type": "object"
+        },
+        "create": {
+          "default": true,
+          "description": "Specifies whether a service account should be created",
+          "required": [],
+          "title": "create",
+          "type": "boolean"
+        },
+        "name": {
+          "default": "",
+          "description": "The name of the service account to use; if not set\nand create is true, a name is generated",
+          "required": [],
+          "title": "name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "create",
+        "annotations",
+        "name"
+      ],
+      "title": "serviceAccount",
+      "type": "object"
+    },
+    "tolerations": {
+      "description": "Tolerations for pod scheduling",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "tolerations",
+      "type": "array"
+    },
+    "topologySpreadConstraints": {
+      "description": "Control how Pods are spread across the cluster",
+      "items": {
+        "required": []
+      },
+      "required": [],
+      "title": "topologySpreadConstraints",
+      "type": "array"
+    },
+    "tikaConfig": {
+      "description": "Custom Tika configuration (tika-config.xml) as a multiline string",
+      "required": [],
+      "title": "tikaConfig",
+      "type": "string"
+    },
+    "additionalConfigs": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional configuration files to mount alongside tika-config.xml",
+      "required": [],
+      "title": "additionalConfigs",
+      "type": "object"
+    }
+  },
+  "required": [
+    "replicaCount",
+    "image",
+    "imagePullSecrets",
+    "nameOverride",
+    "fullnameOverride",
+    "namespaceOverride",
+    "serviceAccount",
+    "podAnnotations",
+    "podSecurityContext",
+    "securityContext",
+    "service",
+    "ingress",
+    "livenessProbe",
+    "readinessProbe",
+    "resources",
+    "autoscaling",
+    "nodeSelector",
+    "tolerations",
+    "affinity",
+    "topologySpreadConstraints",
+    "networkPolicy",
+    "config"
+  ],
+  "type": "object"
+}

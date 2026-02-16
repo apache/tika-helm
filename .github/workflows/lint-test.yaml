@@ -55,7 +55,7 @@ jobs:
             helm plugin update unittest
           else
             echo "Installing helm-unittest..."
-            helm plugin install https://github.com/helm-unittest/helm-unittest
+            helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest
           fi
         shell: bash
       - name: Assemble list of chart directories to test

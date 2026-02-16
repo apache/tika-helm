@@ -1,0 +1,63 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Tag Release on Version Update
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  tag-release:
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'auto-update/tika-')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Extract chart version
+        id: chart-version
+        run: |
+          CHART_VERSION=$(grep '^version:' Chart.yaml | sed 's/version: *"\(.*\)"/\1/')
+          echo "version=$CHART_VERSION" >> "$GITHUB_OUTPUT"
+        shell: bash
+
+      - name: Check if tag already exists
+        id: check-tag
+        run: |
+          if git tag -l "v${{ steps.chart-version.outputs.version }}" | grep -q .; then
+            echo "Tag v${{ steps.chart-version.outputs.version }} already exists."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Tag v${{ steps.chart-version.outputs.version }} does not exist."
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+      - name: Create and push tag
+        if: steps.check-tag.outputs.exists == 'false'
+        run: |
+          TAG="v${{ steps.chart-version.outputs.version }}"
+          git tag -a "$TAG" -m "Release tika-helm $TAG"
+          git push origin "$TAG"
+        shell: bash

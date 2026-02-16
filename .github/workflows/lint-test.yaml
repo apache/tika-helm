@@ -48,31 +48,11 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
         if: steps.list-changed.outputs.changed == 'true'
-      - name: Install helm-unittest
-        run: |
-          if helm plugin list | grep -q unittest; then
-            echo "helm-unittest already installed, updating..."
-            helm plugin update unittest
-          else
-            echo "Installing helm-unittest..."
-            helm plugin install --verify=false https://github.com/helm-unittest/helm-unittest
-          fi
-        shell: bash
-      - name: Assemble list of chart directories to test
-        run: |
-          tr ' ' '\n' <<< . | grep -v '^$' > charts-to-test || true
-          find . -type f -name 'Chart.yaml' -exec dirname {} \; > all-charts
-          [ -z . ] && mv all-charts charts-to-test || true
-        shell: bash
-      - name: Fetch chart dependencies
-        run: |
-          for chart in $(cat charts-to-test); do
-            helm dependency update "$chart" >/dev/null
-          done
-        shell: bash
       - name: Run unit tests
-        run: helm unittest --color $(cat charts-to-test)
-        shell: bash
+        uses: helm-unittest/helm-unittest-action@v2
+        with:
+          charts: .
+          flags: --color
       - name: Run chart-testing (install)
         if: steps.list-changed.outputs.changed == 'true'
         run: ct install --target-branch ${{ github.event.repository.default_branch }} --charts .

@@ -58,6 +58,7 @@ jobs:
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`
 
             [View available tags on Docker Hub](https://hub.docker.com/r/apache/tika/tags)
+          generate_release_notes: true
           draft: false
           prerelease: false
 

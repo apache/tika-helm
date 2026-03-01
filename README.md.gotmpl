@@ -44,6 +44,7 @@ in which case you may need to augment the commands below.
 
 * Add the Tika Helm charts repo:
 `helm repo add tika https://apache.jfrog.io/artifactory/tika`
+  Charts built from the main branch (version suffix e.g. `-a1b2c3d`) are also published here; they are not official releases.
 
 * Install it:
   - with Helm 3: `helm install tika tika/tika --set image.tag=${release.version} -n tika-test`, you will see something like

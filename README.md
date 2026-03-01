@@ -52,6 +52,7 @@ in which case you may need to augment the commands below.
   - Example:
 ```
 helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
+```
 
 ...
 NAME: tika

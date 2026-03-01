@@ -14,11 +14,15 @@
 # limitations under the License.
 
 # This workflow creates a GitHub Release and publishes the Helm chart to the
-# Apache JFrog Artifactory repository whenever a v* tag is pushed.
+# Apache JFrog Artifactory dedicated Helm OCI repository whenever a v* tag is pushed.
+# Chart is published via JFrog CLI and Helm OCI (helm package, helm registry login, helm push).
 #
 # Required GitHub Secrets:
 #   ARTIFACTORY_USERNAME -- Apache JFrog Artifactory username
 #   ARTIFACTORY_PASSWORD -- Apache JFrog Artifactory password
+#
+# Prerequisite: A dedicated Helm OCI repository must exist in Artifactory (e.g. tika-helm-oci).
+# Confirm the repo key with Apache Infra and set HELM_OCI_REPO below if different.
 
 name: Release Helm Chart
 
@@ -29,6 +33,10 @@ on:
 
 permissions:
   contents: write
+
+env:
+  JF_URL: https://apache.jfrog.io
+  HELM_OCI_REPO: tika-helm-oci
 
 jobs:
   release:
@@ -57,6 +65,8 @@ jobs:
             **Chart version:** `${{ steps.versions.outputs.chart_version }}`
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`
 
+            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version ${{ steps.versions.outputs.chart_version }}`
+
             [View available tags on Docker Hub](https://hub.docker.com/r/apache/tika/tags)
           generate_release_notes: true
           draft: false
@@ -65,13 +75,27 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
-      - name: Install helm-push-artifactory-plugin
-        run: helm plugin install https://github.com/belitre/helm-push-artifactory-plugin --version 1.0.2
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          version: 2.92.0
+          jfrog-url: ${{ env.JF_URL }}
+          jfrog-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          jfrog-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Package Helm chart
+        run: helm package . --version ${{ steps.versions.outputs.chart_version }}
         shell: bash
 
-      - name: Push Helm chart to Artifactory
+      - name: Log in to Helm OCI registry
         env:
-          HELM_REPO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          HELM_REPO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: helm push-artifactory . https://apache.jfrog.io/artifactory/tika
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        run: |
+          echo "$ARTIFACTORY_PASSWORD" | helm registry login apache.jfrog.io --username "$ARTIFACTORY_USERNAME" --password-stdin
+        shell: bash
+
+      - name: Push Helm chart to Artifactory (Helm OCI)
+        run: |
+          helm push tika-${{ steps.versions.outputs.chart_version }}.tgz "oci://apache.jfrog.io/artifactory/${{ env.HELM_OCI_REPO }}"
         shell: bash

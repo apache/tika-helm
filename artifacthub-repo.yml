@@ -17,6 +17,9 @@
 
 # Artifact Hub repository metadata file
 #
+# Charts are published to the Helm OCI registry: oci://apache.jfrog.io/artifactory/tika-helm-oci
+# Install: helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version <version>
+#
 # Some settings like the verified publisher flag or the ignored packages won't
 # be applied until the next time the repository is processed. Please keep in
 # mind that the repository won't be processed if it has not changed since the

@@ -87,3 +87,52 @@ jobs:
 
       - name: Run helm test
         run: helm test tika -n tika-test --timeout 3m
+
+      - name: Verify Tika HTTP root
+        run: |
+          sed 's/^          //' <<'JOB' | kubectl apply -f - -n tika-test
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: tika-http-root-check
+          spec:
+            backoffLimit: 2
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: curl
+                    image: curlimages/curl:latest
+                    command: ["sh", "-c"]
+                    args:
+                      - |
+                        code=$(curl -sf -o /dev/null -w "%{http_code}" http://tika:9998/)
+                        [ "$code" = "200" ] || { echo "Expected HTTP 200, got $code"; exit 1; }
+          JOB
+          kubectl wait --for=condition=complete job/tika-http-root-check -n tika-test --timeout=120s
+          kubectl delete job tika-http-root-check -n tika-test --ignore-not-found
+
+      - name: Verify Tika /tika endpoint
+        run: |
+          sed 's/^          //' <<'JOB' | kubectl apply -f - -n tika-test
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: tika-endpoint-check
+          spec:
+            backoffLimit: 2
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: curl
+                    image: curlimages/curl:latest
+                    command: ["sh", "-c"]
+                    args:
+                      - |
+                        # GET /tika returns 200 (OK) or 405 (Method Not Allowed) when endpoint is up
+                        code=$(curl -s -o /dev/null -w "%{http_code}" http://tika:9998/tika)
+                        case "$code" in 200|405) exit 0 ;; *) echo "Unexpected /tika status: $code"; exit 1 ;; esac
+          JOB
+          kubectl wait --for=condition=complete job/tika-endpoint-check -n tika-test --timeout=120s
+          kubectl delete job tika-endpoint-check -n tika-test --ignore-not-found

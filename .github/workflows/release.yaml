@@ -14,15 +14,18 @@
 # limitations under the License.
 
 # This workflow creates a GitHub Release and publishes the Helm chart to the
-# Apache JFrog Artifactory dedicated Helm OCI repository whenever a v* tag is pushed.
-# Chart is published via JFrog CLI and Helm OCI (helm package, helm registry login, helm push).
+# Apache JFrog Artifactory Helm OCI repository whenever a v* tag is pushed.
+#
+# Publishing uses JFrog CLI (`jf helm`) so the chart push is tied to Artifactory
+# build-info: CI environment and Git metadata are attached, then the build is
+# published for traceability (Builds UI, Xray, promotion flows, etc.).
 #
 # Required GitHub Secrets:
 #   ARTIFACTORY_USERNAME -- Apache JFrog Artifactory username
 #   ARTIFACTORY_PASSWORD -- Apache JFrog Artifactory password
 #
-# Prerequisite: A dedicated Helm OCI repository must exist in Artifactory (e.g. tika-helm-oci).
-# Confirm the repo key with Apache Infra and set HELM_OCI_REPO below if different.
+# Prerequisite: The Helm OCI repository must exist in Apache JFrog (Tika project), e.g. tika-helm.
+# Confirm the repo key and project with Apache Infra and set HELM_OCI_REPO / JF_PROJECT_KEY if different.
 
 name: Release Helm Chart
 
@@ -36,7 +39,10 @@ permissions:
 
 env:
   JF_URL: https://apache.jfrog.io
-  HELM_OCI_REPO: tika-helm-oci
+  HELM_OCI_REPO: tika-helm
+  JF_PROJECT_KEY: tika
+  JF_BUILD_NAME: tika-helm
+  JF_BUILD_NUMBER: ${{ github.run_id }}
 
 jobs:
   release:
@@ -44,6 +50,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Extract versions from Chart.yaml
         id: versions
@@ -65,7 +73,9 @@ jobs:
             **Chart version:** `${{ steps.versions.outputs.chart_version }}`
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`
 
-            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version ${{ steps.versions.outputs.chart_version }}`
+            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/artifactory/${{ env.HELM_OCI_REPO }}/tika --version ${{ steps.versions.outputs.chart_version }}`
+
+            **Artifactory build:** `${{ env.JF_BUILD_NAME }}` / `${{ env.JF_BUILD_NUMBER }}` (project `${{ env.JF_PROJECT_KEY }}`)
 
             [View available tags on Docker Hub](https://hub.docker.com/r/apache/tika/tags)
           generate_release_notes: true
@@ -87,15 +97,30 @@ jobs:
         run: helm package . --version ${{ steps.versions.outputs.chart_version }}
         shell: bash
 
-      - name: Log in to Helm OCI registry
+      - name: Log in to Helm OCI registry (JFrog CLI)
         env:
           ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: |
-          echo "$ARTIFACTORY_PASSWORD" | helm registry login apache.jfrog.io --username "$ARTIFACTORY_USERNAME" --password-stdin
+        run: >-
+          jf helm registry login apache.jfrog.io
+          --username "$ARTIFACTORY_USERNAME"
+          --password "$ARTIFACTORY_PASSWORD"
         shell: bash
 
-      - name: Push Helm chart to Artifactory (Helm OCI)
+      - name: Push Helm chart (JFrog CLI, build-info)
+        env:
+          CHART_VERSION: ${{ steps.versions.outputs.chart_version }}
         run: |
-          helm push tika-${{ steps.versions.outputs.chart_version }}.tgz "oci://apache.jfrog.io/artifactory/${{ env.HELM_OCI_REPO }}"
+          jf helm push "tika-${CHART_VERSION}.tgz" \
+            "oci://apache.jfrog.io/artifactory/${HELM_OCI_REPO}" \
+            --build-name="${JF_BUILD_NAME}" \
+            --build-number="${JF_BUILD_NUMBER}" \
+            --project="${JF_PROJECT_KEY}"
+        shell: bash
+
+      - name: Enrich and publish build info
+        run: |
+          jf rt build-collect-env "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-add-git "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-publish --project="${JF_PROJECT_KEY}" "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
         shell: bash

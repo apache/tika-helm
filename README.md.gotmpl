@@ -39,7 +39,7 @@ will work with the version of Tika you are installing.
 
 ### Install released version from Helm OCI registry
 
-Charts are published to a dedicated Helm OCI repository on Apache JFrog Artifactory. Install directly from the OCI registry (Helm 3.8+).
+Charts are published to the [Tika Helm OCI repository](https://apache.jfrog.io/ui/repos/tree/General/tika-helm?projectKey=tika) on Apache JFrog Artifactory. Install directly from the OCI registry (Helm 3.8+).
 
 **N.B.** You may or may not need/wish to install the chart into a specific **namespace**, 
 in which case you may need to augment the commands below.
@@ -48,10 +48,10 @@ in which case you may need to augment the commands below.
 `helm registry login apache.jfrog.io --username <your-username> --password <your-password>`
 
 * Install from OCI (replace `<version>` with the chart version you want, e.g. `3.2.3`):
-  - with Helm 3: `helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version <version> --set image.tag=<app-version> -n tika-test`
+  - with Helm 3: `helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
   - Example:
 ```
-helm install tika oci://apache.jfrog.io/artifactory/tika-helm-oci/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
+helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
 ```
 
 ...

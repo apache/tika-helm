@@ -21,4 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
+# CI / automation (not shipped in the chart package)
+.jfrog-cli-cache/
+.github/
+.asf.yaml
 tests

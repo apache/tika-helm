@@ -13,13 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This workflow publishes the Helm chart to Apache JFrog Artifactory on every
+# This workflow publishes the Helm chart to Apache JFrog (Helm OCI) on every
 # push to main. Published versions use the form {chart_version}-{short_sha}
 # and are not official releases.
+#
+# Publishing uses JFrog CLI (`jf helm`) with build-info (env + Git) and
+# `jf rt build-publish`, matching the tagged release workflow.
 #
 # Required GitHub Secrets:
 #   ARTIFACTORY_USERNAME -- Apache JFrog Artifactory username
 #   ARTIFACTORY_PASSWORD -- Apache JFrog Artifactory password
+#
+# Prerequisite: Helm OCI repo and project match release.yaml (HELM_OCI_REPO, JF_PROJECT_KEY).
 
 name: Publish Helm Chart to Artifactory on Merge
 
@@ -35,6 +40,13 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  JF_URL: https://apache.jfrog.io
+  HELM_OCI_REPO: tika-helm
+  JF_PROJECT_KEY: tika
+  JF_BUILD_NAME: tika-helm-main
+  JF_BUILD_NUMBER: ${{ github.run_id }}
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -43,6 +55,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Extract version from Chart.yaml
         id: versions
@@ -66,15 +80,44 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
-      - name: Install helm-push-artifactory-plugin
-        run: helm plugin install https://github.com/belitre/helm-push-artifactory-plugin --version 1.0.2
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          version: 2.92.0
+          jfrog-url: ${{ env.JF_URL }}
+          jfrog-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          jfrog-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Package Helm chart
+        run: helm package .
         shell: bash
 
-      - name: Push Helm chart to Artifactory
+      - name: Log in to Helm OCI registry (JFrog CLI)
         env:
-          HELM_REPO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          HELM_REPO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: helm push-artifactory . https://apache.jfrog.io/artifactory/tika
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        run: >-
+          jf helm registry login apache.jfrog.io
+          --username "$ARTIFACTORY_USERNAME"
+          --password "$ARTIFACTORY_PASSWORD"
+        shell: bash
+
+      - name: Push Helm chart (JFrog CLI, build-info)
+        env:
+          PUBLISH_VERSION: ${{ steps.publish-version.outputs.version }}
+        run: |
+          jf helm push "tika-${PUBLISH_VERSION}.tgz" \
+            "oci://apache.jfrog.io/artifactory/${HELM_OCI_REPO}" \
+            --build-name="${JF_BUILD_NAME}" \
+            --build-number="${JF_BUILD_NUMBER}" \
+            --project="${JF_PROJECT_KEY}"
+        shell: bash
+
+      - name: Enrich and publish build info
+        run: |
+          jf rt build-collect-env "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-add-git "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-publish --project="${JF_PROJECT_KEY}" "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
         shell: bash
 
   test-published:

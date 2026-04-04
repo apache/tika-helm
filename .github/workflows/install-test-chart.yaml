@@ -14,7 +14,7 @@
 # limitations under the License.
 
 # Reusable workflow: create a kind cluster, install the tika Helm chart
-# (from Artifactory by version or from repo at ref), then run helm test.
+# (from Artifactory Helm OCI by version or from repo at ref), then run helm test.
 #
 # Call with either:
 #   - chart_version: install from Artifactory (requires ARTIFACTORY_* secrets)
@@ -26,7 +26,7 @@ on:
   workflow_call:
     inputs:
       chart_version:
-        description: 'Chart version to install from Artifactory (e.g. 3.2.3-abc1234). Omit to install from repo.'
+        description: 'Chart version to install from Artifactory Helm OCI (e.g. 3.2.3-abc1234). Omit to install from repo.'
         required: false
         type: string
       ref:
@@ -60,16 +60,16 @@ jobs:
       - name: Create kind cluster
         uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
 
-      - name: Add Artifactory repo and pull chart
+      - name: Log in to Helm OCI and pull chart
         if: inputs.chart_version != ''
         env:
           HELM_REPO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
           HELM_REPO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
         run: |
-          helm repo add tika https://apache.jfrog.io/artifactory/tika \
-            --username "$HELM_REPO_USERNAME" --password "$HELM_REPO_PASSWORD"
-          helm repo update
-          helm pull tika/tika --version ${{ inputs.chart_version }}
+          echo "$HELM_REPO_PASSWORD" | helm registry login apache.jfrog.io \
+            --username "$HELM_REPO_USERNAME" --password-stdin
+          helm pull oci://apache.jfrog.io/artifactory/tika-helm/tika \
+            --version "${{ inputs.chart_version }}"
 
       - name: Install chart from Artifactory
         if: inputs.chart_version != ''

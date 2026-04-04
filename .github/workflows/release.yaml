@@ -14,11 +14,18 @@
 # limitations under the License.
 
 # This workflow creates a GitHub Release and publishes the Helm chart to the
-# Apache JFrog Artifactory repository whenever a v* tag is pushed.
+# Apache JFrog Artifactory Helm OCI repository whenever a v* tag is pushed.
+#
+# Publishing uses JFrog CLI (`jf helm`) so the chart push is tied to Artifactory
+# build-info: CI environment and Git metadata are attached, then the build is
+# published for traceability (Builds UI, Xray, promotion flows, etc.).
 #
 # Required GitHub Secrets:
 #   ARTIFACTORY_USERNAME -- Apache JFrog Artifactory username
 #   ARTIFACTORY_PASSWORD -- Apache JFrog Artifactory password
+#
+# Prerequisite: The Helm OCI repository must exist in Apache JFrog (Tika project), e.g. tika-helm.
+# Confirm the repo key and project with Apache Infra and set HELM_OCI_REPO / JF_PROJECT_KEY if different.
 
 name: Release Helm Chart
 
@@ -30,12 +37,21 @@ on:
 permissions:
   contents: write
 
+env:
+  JF_URL: https://apache.jfrog.io
+  HELM_OCI_REPO: tika-helm
+  JF_PROJECT_KEY: tika
+  JF_BUILD_NAME: tika-helm
+  JF_BUILD_NUMBER: ${{ github.run_id }}
+
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Extract versions from Chart.yaml
         id: versions
@@ -57,6 +73,10 @@ jobs:
             **Chart version:** `${{ steps.versions.outputs.chart_version }}`
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`
 
+            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/artifactory/${{ env.HELM_OCI_REPO }}/tika --version ${{ steps.versions.outputs.chart_version }}`
+
+            **Artifactory build:** `${{ env.JF_BUILD_NAME }}` / `${{ env.JF_BUILD_NUMBER }}` (project `${{ env.JF_PROJECT_KEY }}`)
+
             [View available tags on Docker Hub](https://hub.docker.com/r/apache/tika/tags)
           generate_release_notes: true
           draft: false
@@ -65,13 +85,42 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
 
-      - name: Install helm-push-artifactory-plugin
-        run: helm plugin install https://github.com/belitre/helm-push-artifactory-plugin --version 1.0.2
+      - name: Set up JFrog CLI
+        uses: jfrog/setup-jfrog-cli@v4
+        with:
+          version: 2.92.0
+          jfrog-url: ${{ env.JF_URL }}
+          jfrog-username: ${{ secrets.ARTIFACTORY_USERNAME }}
+          jfrog-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+
+      - name: Package Helm chart
+        run: helm package . --version ${{ steps.versions.outputs.chart_version }}
         shell: bash
 
-      - name: Push Helm chart to Artifactory
+      - name: Log in to Helm OCI registry (JFrog CLI)
         env:
-          HELM_REPO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
-          HELM_REPO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
-        run: helm push-artifactory . https://apache.jfrog.io/artifactory/tika
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        run: >-
+          jf helm registry login apache.jfrog.io
+          --username "$ARTIFACTORY_USERNAME"
+          --password "$ARTIFACTORY_PASSWORD"
+        shell: bash
+
+      - name: Push Helm chart (JFrog CLI, build-info)
+        env:
+          CHART_VERSION: ${{ steps.versions.outputs.chart_version }}
+        run: |
+          jf helm push "tika-${CHART_VERSION}.tgz" \
+            "oci://apache.jfrog.io/artifactory/${HELM_OCI_REPO}" \
+            --build-name="${JF_BUILD_NAME}" \
+            --build-number="${JF_BUILD_NUMBER}" \
+            --project="${JF_PROJECT_KEY}"
+        shell: bash
+
+      - name: Enrich and publish build info
+        run: |
+          jf rt build-collect-env "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-add-git "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
+          jf rt build-publish --project="${JF_PROJECT_KEY}" "${JF_BUILD_NAME}" "${JF_BUILD_NUMBER}"
         shell: bash

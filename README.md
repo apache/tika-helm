@@ -20,7 +20,7 @@ will work with the version of Tika you are installing.
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
 - [Installing](#installing)
-  - [Install released version using Helm repository](#install-released-version-using-helm-repository)
+  - [Install released version from Helm OCI registry](#install-released-version-from-helm-oci-registry)
   - [Install development version using main branch](#install-development-version-using-main-branch)
   - [Custom configuration for tika](#custom-configuration-for-tika)
 - [Upgrading](#upgrading)
@@ -37,19 +37,24 @@ will work with the version of Tika you are installing.
 
 ## Installing
 
-### Install released version using Helm repository
+### Install released version from Helm OCI registry
+
+Charts are published to the [Tika Helm OCI repository](https://apache.jfrog.io/ui/repos/tree/General/tika-helm?projectKey=tika) on Apache JFrog Artifactory. Install directly from the OCI registry (Helm 3.8+).
 
 **N.B.** You may or may not need/wish to install the chart into a specific **namespace**,
 in which case you may need to augment the commands below.
 
-* Add the Tika Helm charts repo:
-`helm repo add tika https://apache.jfrog.io/artifactory/tika`
-  Charts built from the main branch (version suffix e.g. `-a1b2c3d`) are also published here; they are not official releases.
+* If the registry requires authentication (e.g. for private access), log in first:
+`helm registry login apache.jfrog.io --username <your-username> --password <your-password>`
 
-* Install it:
-  - with Helm 3: `helm install tika tika/tika --set image.tag=${release.version} -n tika-test`, you will see something like
+* **Snapshot builds from `main`:** Each merge publishes a chart to the same OCI repository with version `{chart_version}-{git_short_sha}` (for example `3.2.3-a1b2c3d`). These are not official releases. Use `helm install` or `helm pull` with that version and the OCI URL below.
+
+* Install from OCI (replace `<version>` with the chart version you want, e.g. `3.2.3`):
+  - with Helm 3: `helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
+  - Example:
 ```
-helm install tika tika/tika --set image.tag=latest-full -n tika-test
+helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
+```
 
 ...
 NAME: tika
@@ -69,6 +74,8 @@ You may notice that the _kubectl port forwarding_ experiences a _timeout issue_ 
 while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT ; done
 ```
 ... this should keep `kubectl` reconnecting on connection lost.
+
+**Note:** The classic Helm repository (`helm repo add tika https://apache.jfrog.io/artifactory/tika`) is deprecated. Official releases and `main`-branch snapshot charts are published to the Helm OCI repository above.
 
 ### Install development version using main branch
 

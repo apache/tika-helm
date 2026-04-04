@@ -25,6 +25,8 @@
 #   ARTIFACTORY_PASSWORD -- Apache JFrog Artifactory password
 #
 # Prerequisite: Helm OCI repo and project match release.yaml (HELM_OCI_REPO, JF_PROJECT_KEY).
+#
+# JFrog CLI is installed via .github/actions/setup-jfrog-cli-manual (see release.yaml).
 
 name: Publish Helm Chart to Artifactory on Merge
 
@@ -81,12 +83,13 @@ jobs:
         uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2
 
       - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v4
+        uses: ./.github/actions/setup-jfrog-cli-manual
         with:
-          version: 2.92.0
           jfrog-url: ${{ env.JF_URL }}
-          jfrog-username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          jfrog-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          version: '2.92.0'
+        env:
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: Package Helm chart
         run: helm package .

@@ -26,6 +26,9 @@
 #
 # Prerequisite: The Helm OCI repository must exist in Apache JFrog (Tika project), e.g. tika-helm.
 # Confirm the repo key and project with Apache Infra and set HELM_OCI_REPO / JF_PROJECT_KEY if different.
+#
+# JFrog CLI is installed via .github/actions/setup-jfrog-cli-manual (cached download from
+# releases.jfrog.io) because jfrog/setup-jfrog-cli is not in ASF approved_patterns.yml.
 
 name: Release Helm Chart
 
@@ -86,12 +89,13 @@ jobs:
         uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2
 
       - name: Set up JFrog CLI
-        uses: jfrog/setup-jfrog-cli@v4
+        uses: ./.github/actions/setup-jfrog-cli-manual
         with:
-          version: 2.92.0
           jfrog-url: ${{ env.JF_URL }}
-          jfrog-username: ${{ secrets.ARTIFACTORY_USERNAME }}
-          jfrog-password: ${{ secrets.ARTIFACTORY_PASSWORD }}
+          version: '2.92.0'
+        env:
+          ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
 
       - name: Package Helm chart
         run: helm package . --version ${{ steps.versions.outputs.chart_version }}

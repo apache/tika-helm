@@ -47,6 +47,8 @@ in which case you may need to augment the commands below.
 * If the registry requires authentication (e.g. for private access), log in first:
 `helm registry login apache.jfrog.io --username <your-username> --password <your-password>`
 
+* **Snapshot builds from `main`:** Each merge publishes a chart to the same OCI repository with version `{chart_version}-{git_short_sha}` (for example `3.2.3-a1b2c3d`). These are not official releases. Use `helm install` or `helm pull` with that version and the OCI URL below.
+
 * Install from OCI (replace `<version>` with the chart version you want, e.g. `3.2.3`):
   - with Helm 3: `helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
   - Example:
@@ -73,7 +75,7 @@ while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAI
 ```
 ... this should keep `kubectl` reconnecting on connection lost.
 
-**Note:** The classic Helm repository (`helm repo add tika https://apache.jfrog.io/artifactory/tika`) is deprecated and no longer receives new chart releases. Please use the Helm OCI install above.
+**Note:** The classic Helm repository (`helm repo add tika https://apache.jfrog.io/artifactory/tika`) is deprecated. Official releases and `main`-branch snapshot charts are published to the Helm OCI repository above.
 
 ### Install development version using main branch
 

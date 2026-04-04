@@ -1,0 +1,138 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Reusable workflow: create a kind cluster, install the tika Helm chart
+# (from Artifactory Helm OCI by version or from repo at ref), then run helm test.
+#
+# Call with either:
+#   - chart_version: install from Artifactory (requires ARTIFACTORY_* secrets)
+#   - ref: install from repo at this ref (e.g. github.sha)
+
+name: Install and Test Chart
+
+on:
+  workflow_call:
+    inputs:
+      chart_version:
+        description: 'Chart version to install from Artifactory Helm OCI (e.g. 3.2.3-abc1234). Omit to install from repo.'
+        required: false
+        type: string
+      ref:
+        description: 'Git ref to checkout and install from (e.g. github.sha). Required when chart_version is not set.'
+        required: false
+        type: string
+    secrets:
+      ARTIFACTORY_USERNAME:
+        description: 'Apache JFrog Artifactory username (required when chart_version is set)'
+        required: false
+      ARTIFACTORY_PASSWORD:
+        description: 'Apache JFrog Artifactory password (required when chart_version is set)'
+        required: false
+
+permissions:
+  contents: read
+
+jobs:
+  install-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        if: inputs.chart_version == ''
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Set up Helm
+        uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2
+
+      - name: Create kind cluster
+        uses: helm/kind-action@92086f6be054225fa813e0a4b13787fc9088faab # v1.13.0
+
+      - name: Log in to Helm OCI and pull chart
+        if: inputs.chart_version != ''
+        env:
+          HELM_REPO_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+          HELM_REPO_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        run: |
+          echo "$HELM_REPO_PASSWORD" | helm registry login apache.jfrog.io \
+            --username "$HELM_REPO_USERNAME" --password-stdin
+          helm pull oci://apache.jfrog.io/artifactory/tika-helm/tika \
+            --version "${{ inputs.chart_version }}"
+
+      - name: Install chart from Artifactory
+        if: inputs.chart_version != ''
+        run: |
+          helm install tika tika-${{ inputs.chart_version }}.tgz \
+            -n tika-test --create-namespace \
+            --wait --timeout 5m
+
+      - name: Install chart from repo
+        if: inputs.chart_version == ''
+        run: |
+          helm install tika . \
+            -n tika-test --create-namespace \
+            --wait --timeout 5m
+
+      - name: Run helm test
+        run: helm test tika -n tika-test --timeout 3m
+
+      - name: Verify Tika HTTP root
+        run: |
+          sed 's/^          //' <<'JOB' | kubectl apply -f - -n tika-test
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: tika-http-root-check
+          spec:
+            backoffLimit: 2
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: curl
+                    image: curlimages/curl:latest
+                    command: ["sh", "-c"]
+                    args:
+                      - |
+                        code=$(curl -sf -o /dev/null -w "%{http_code}" http://tika:9998/)
+                        [ "$code" = "200" ] || { echo "Expected HTTP 200, got $code"; exit 1; }
+          JOB
+          kubectl wait --for=condition=complete job/tika-http-root-check -n tika-test --timeout=120s
+          kubectl delete job tika-http-root-check -n tika-test --ignore-not-found
+
+      - name: Verify Tika /tika endpoint
+        run: |
+          sed 's/^          //' <<'JOB' | kubectl apply -f - -n tika-test
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: tika-endpoint-check
+          spec:
+            backoffLimit: 2
+            template:
+              spec:
+                restartPolicy: Never
+                containers:
+                  - name: curl
+                    image: curlimages/curl:latest
+                    command: ["sh", "-c"]
+                    args:
+                      - |
+                        # GET /tika returns 200 (OK) or 405 (Method Not Allowed) when endpoint is up
+                        code=$(curl -s -o /dev/null -w "%{http_code}" http://tika:9998/tika)
+                        case "$code" in 200|405) exit 0 ;; *) echo "Unexpected /tika status: $code"; exit 1 ;; esac
+          JOB
+          kubectl wait --for=condition=complete job/tika-endpoint-check -n tika-test --timeout=120s
+          kubectl delete job tika-endpoint-check -n tika-test --ignore-not-found

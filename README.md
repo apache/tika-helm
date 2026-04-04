@@ -50,10 +50,10 @@ in which case you may need to augment the commands below.
 * **Snapshot builds from `main`:** Each merge publishes a chart to the same OCI repository with version `{chart_version}-{git_short_sha}` (for example `3.2.3-a1b2c3d`). These are not official releases. Use `helm install` or `helm pull` with that version and the OCI URL below.
 
 * Install from OCI (replace `<version>` with the chart version you want, e.g. `3.2.3`):
-  - with Helm 3: `helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
+  - with Helm 3: `helm install tika oci://apache.jfrog.io/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
   - Example:
 ```
-helm install tika oci://apache.jfrog.io/artifactory/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
+helm install tika oci://apache.jfrog.io/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
 ```
 
 ...

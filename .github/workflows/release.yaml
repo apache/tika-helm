@@ -76,7 +76,7 @@ jobs:
             **Chart version:** `${{ steps.versions.outputs.chart_version }}`
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`
 
-            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/artifactory/${{ env.HELM_OCI_REPO }}/tika --version ${{ steps.versions.outputs.chart_version }}`
+            **Install from Helm OCI:** `helm install tika oci://apache.jfrog.io/${{ env.HELM_OCI_REPO }}/tika --version ${{ steps.versions.outputs.chart_version }}`
 
             **Artifactory build:** `${{ env.JF_BUILD_NAME }}` / `${{ env.JF_BUILD_NUMBER }}` (project `${{ env.JF_PROJECT_KEY }}`)
 
@@ -116,7 +116,7 @@ jobs:
           CHART_VERSION: ${{ steps.versions.outputs.chart_version }}
         run: |
           jf helm push "tika-${CHART_VERSION}.tgz" \
-            "oci://apache.jfrog.io/artifactory/${HELM_OCI_REPO}" \
+            "oci://apache.jfrog.io/${HELM_OCI_REPO}" \
             --build-name="${JF_BUILD_NAME}" \
             --build-number="${JF_BUILD_NUMBER}" \
             --project="${JF_PROJECT_KEY}"

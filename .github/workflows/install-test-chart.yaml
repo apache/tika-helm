@@ -68,7 +68,7 @@ jobs:
         run: |
           echo "$HELM_REPO_PASSWORD" | helm registry login apache.jfrog.io \
             --username "$HELM_REPO_USERNAME" --password-stdin
-          helm pull oci://apache.jfrog.io/artifactory/tika-helm/tika \
+          helm pull oci://apache.jfrog.io/tika-helm/tika \
             --version "${{ inputs.chart_version }}"
 
       - name: Install chart from Artifactory

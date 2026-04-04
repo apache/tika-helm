@@ -110,7 +110,7 @@ jobs:
           PUBLISH_VERSION: ${{ steps.publish-version.outputs.version }}
         run: |
           jf helm push "tika-${PUBLISH_VERSION}.tgz" \
-            "oci://apache.jfrog.io/artifactory/${HELM_OCI_REPO}" \
+            "oci://apache.jfrog.io/${HELM_OCI_REPO}" \
             --build-name="${JF_BUILD_NAME}" \
             --build-number="${JF_BUILD_NUMBER}" \
             --project="${JF_PROJECT_KEY}"

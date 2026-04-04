@@ -52,28 +52,34 @@ in which case you may need to augment the commands below.
 * Install from OCI (replace `<version>` with the chart version you want, e.g. `3.2.3`):
   - with Helm 3: `helm install tika oci://apache.jfrog.io/tika-helm/tika --version <version> --set image.tag=<app-version> -n tika-test`
   - Example:
-```
-helm install tika oci://apache.jfrog.io/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
-```
 
-...
-NAME: tika
-LAST DEPLOYED: Mon Jan 24 13:38:01 2022
-NAMESPACE: tika-test
-STATUS: deployed
-REVISION: 1
-NOTES:
-1. Get the application URL by running these commands:
-  export POD_NAME=$(kubectl get pods --namespace tika-test -l "app.kubernetes.io/name=tika,app.kubernetes.io/instance=tika" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace tika-test $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:9998 to use your application"
-  kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT
-```
-You may notice that the _kubectl port forwarding_ experiences a _timeout issue_ which ultimately kills the app. In this case you can run port formarding in a loop
-```
+    ```console
+    helm install tika oci://apache.jfrog.io/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
+    ```
+
+    Example installation notes:
+
+    ```text
+    NAME: tika
+    LAST DEPLOYED: Mon Jan 24 13:38:01 2022
+    NAMESPACE: tika-test
+    STATUS: deployed
+    REVISION: 1
+    NOTES:
+    1. Get the application URL by running these commands:
+      export POD_NAME=$(kubectl get pods --namespace tika-test -l "app.kubernetes.io/name=tika,app.kubernetes.io/instance=tika" -o jsonpath="{.items[0].metadata.name}")
+      export CONTAINER_PORT=$(kubectl get pod --namespace tika-test $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
+      echo "Visit http://127.0.0.1:9998 to use your application"
+      kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT
+    ```
+
+You may notice that the _kubectl port forwarding_ experiences a _timeout issue_ which ultimately kills the app. In this case you can run port forwarding in a loop:
+
+```console
 while true; do kubectl --namespace tika-test port-forward $POD_NAME 9998:$CONTAINER_PORT ; done
 ```
-... this should keep `kubectl` reconnecting on connection lost.
+
+This should keep `kubectl` reconnecting on connection lost.
 
 **Note:** The classic Helm repository (`helm repo add tika https://apache.jfrog.io/artifactory/tika`) is deprecated. Official releases and `main`-branch snapshot charts are published to the Helm OCI repository above.
 

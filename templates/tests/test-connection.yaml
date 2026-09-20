@@ -19,7 +19,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ include "tika-helm.fullname" . }}-test-schema"
+  name: "{{ include "tika-helm.fullname" . }}-test-values"
   namespace: {{ include "tika-helm.namespace" . }}
   labels:
     {{- include "tika-helm.labels" . | nindent 4 }}
@@ -27,8 +27,10 @@ metadata:
     "helm.sh/hook": test
     "helm.sh/hook-weight": "-1"
 data:
-  values.schema.json: |
-{{ .Files.Get "values.schema.json" | indent 4 }}
+  # .Files cannot read values.schema.json, so ingest the release values, which
+  # are an equivalent JSON document, rather than ship a sample file.
+  values.json: |
+{{ .Values | toPrettyJson | indent 4 }}
 ---
 apiVersion: v1
 kind: Pod
@@ -48,7 +50,7 @@ spec:
       args:
         - |
           set -eu
-          SAMPLE=/sample/values.schema.json
+          SAMPLE=/sample/values.json
           BASE=http://{{ include "tika-helm.fullname" . }}:{{ .Values.service.port }}
           test -s "$SAMPLE"
 
@@ -57,14 +59,14 @@ spec:
           echo "$ver" | grep -q "Apache Tika"
 
           mime=$(curl -sS -f -T "$SAMPLE" \
-            -H "Content-Disposition: attachment; filename=values.schema.json" \
+            -H "Content-Disposition: attachment; filename=values.json" \
             "$BASE/detect" | tr -d '\r')
           echo "$mime"
           echo "$mime" | grep -qi "json"
 
           meta=$(curl -sS -f -T "$SAMPLE" \
             -H "Accept: application/json" \
-            -H "Content-Disposition: attachment; filename=values.schema.json" \
+            -H "Content-Disposition: attachment; filename=values.json" \
             "$BASE/meta")
           echo "$meta"
           echo "$meta" | grep -qi "Content-Type"
@@ -72,10 +74,10 @@ spec:
 
           text=$(curl -sS -f -T "$SAMPLE" \
             -H "Accept: text/plain" \
-            -H "Content-Disposition: attachment; filename=values.schema.json" \
+            -H "Content-Disposition: attachment; filename=values.json" \
             "$BASE/tika")
-          echo "$text" | grep -F '$schema'
-          echo "$text" | grep -q "Enable autoscaling for Tika pods"
+          echo "$text" | grep -q "readinessProbe"
+          echo "$text" | grep -q "securityContext"
       volumeMounts:
         - name: sample
           mountPath: /sample
@@ -83,5 +85,5 @@ spec:
   volumes:
     - name: sample
       configMap:
-        name: "{{ include "tika-helm.fullname" . }}-test-schema"
+        name: "{{ include "tika-helm.fullname" . }}-test-values"
   restartPolicy: Never

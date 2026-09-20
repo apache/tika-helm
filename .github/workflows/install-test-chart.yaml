@@ -94,8 +94,13 @@ jobs:
           kubectl wait --for=condition=complete job/tika-http-root-check -n tika-test --timeout=120s
           kubectl delete job tika-http-root-check -n tika-test --ignore-not-found
 
-      - name: Verify Tika /tika endpoint
+      - name: Smoke Tika version, detect, metadata, and text
         run: |
-          kubectl apply -f .github/ci/tika-endpoint-check-job.yaml -n tika-test
-          kubectl wait --for=condition=complete job/tika-endpoint-check -n tika-test --timeout=120s
-          kubectl delete job tika-endpoint-check -n tika-test --ignore-not-found
+          kubectl create configmap tika-smoke-schema \
+            --from-file=values.schema.json=values.schema.json \
+            -n tika-test --dry-run=client -o yaml | kubectl apply -f -
+          kubectl apply -f .github/ci/tika-ingest-check-job.yaml -n tika-test
+          kubectl wait --for=condition=complete job/tika-smoke-check -n tika-test --timeout=120s
+          kubectl logs job/tika-smoke-check -n tika-test
+          kubectl delete job tika-smoke-check -n tika-test --ignore-not-found
+          kubectl delete configmap tika-smoke-schema -n tika-test --ignore-not-found

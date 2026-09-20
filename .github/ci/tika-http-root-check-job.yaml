@@ -25,7 +25,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: curl
-          image: curlimages/curl:latest
+          image: curlimages/curl:8.16.0
           command: ["sh", "-c"]
           args:
             - |

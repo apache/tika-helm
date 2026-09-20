@@ -19,8 +19,8 @@
 ---
 apiVersion: v2
 name: tika
-appVersion: "3.3.1.0-full"
-version: "3.3.1"
+appVersion: "4.0.0-1-full"
+version: "4.0.0"
 description: The official Helm chart for Apache Tika
 type: application
 keywords:

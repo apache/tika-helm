@@ -27,7 +27,7 @@ image:
   # -- Image pull policy for the Tika container
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion
-  tag: '3.3.1.0-full'
+  tag: '4.0.0-1-full'
 
 # -- Secrets for pulling images from a private registry
 imagePullSecrets: []

@@ -1,0 +1,93 @@
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Used by .github/workflows/install-test-chart.yaml.
+# Mounts ConfigMap tika-smoke-schema (key values.schema.json).
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tika-smoke-check
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: curl
+          image: curlimages/curl:8.16.0
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -eu
+              SAMPLE=/sample/values.schema.json
+              BASE=http://tika:9998
+              test -s "$SAMPLE"
+
+              echo "=== GET /version ==="
+              ver=$(curl -sS -f "$BASE/version")
+              echo "$ver"
+              echo "$ver" | grep -q "Apache Tika" || {
+                echo "GET /version did not contain Apache Tika"
+                exit 1
+              }
+
+              echo "=== PUT /detect ==="
+              mime=$(curl -sS -f -T "$SAMPLE" \
+                -H "Content-Disposition: attachment; filename=values.schema.json" \
+                "$BASE/detect" | tr -d '\r')
+              echo "$mime"
+              echo "$mime" | grep -qi "json" || {
+                echo "Expected MIME containing json, got: $mime"
+                exit 1
+              }
+
+              echo "=== PUT /meta ==="
+              meta=$(curl -sS -f -T "$SAMPLE" \
+                -H "Accept: application/json" \
+                -H "Content-Disposition: attachment; filename=values.schema.json" \
+                "$BASE/meta")
+              echo "$meta"
+              echo "$meta" | grep -qi "Content-Type" || {
+                echo "Metadata missing Content-Type"
+                exit 1
+              }
+              echo "$meta" | grep -qi "json" || {
+                echo "Metadata Content-Type missing json"
+                exit 1
+              }
+
+              echo "=== PUT /tika ==="
+              text=$(curl -sS -f -T "$SAMPLE" \
+                -H "Accept: text/plain" \
+                -H "Content-Disposition: attachment; filename=values.schema.json" \
+                "$BASE/tika")
+              echo "$text" | head -c 500
+              echo
+              echo "$text" | grep -F '$schema' || {
+                echo "Extracted text did not contain \$schema"
+                exit 1
+              }
+              echo "$text" | grep -q "Enable autoscaling for Tika pods" || {
+                echo "Extracted text did not contain Enable autoscaling for Tika pods"
+                exit 1
+              }
+          volumeMounts:
+            - name: sample
+              mountPath: /sample
+              readOnly: true
+      volumes:
+        - name: sample
+          configMap:
+            name: tika-smoke-schema

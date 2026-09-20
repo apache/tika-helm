@@ -13,6 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# After an auto-update PR is merged, create v<chart_version> and invoke the
+# Release Helm Chart workflow in-process. A GITHUB_TOKEN tag push does not
+# trigger on.push.tags, so calling the reusable workflow is required.
+
 name: Tag Release on Version Update
 
 on:
@@ -29,6 +33,9 @@ jobs:
     if: >-
       github.event.pull_request.merged == true &&
       startsWith(github.event.pull_request.head.ref, 'auto-update/tika-')
+    outputs:
+      tag: ${{ steps.result.outputs.tag }}
+      should_release: ${{ steps.result.outputs.should_release }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -63,3 +70,22 @@ jobs:
           git tag -a "$TAG" -m "Release tika-helm $TAG"
           git push origin "$TAG"
         shell: bash
+
+      - name: Set job outputs
+        id: result
+        run: |
+          echo "tag=v${{ steps.chart-version.outputs.version }}" >> "$GITHUB_OUTPUT"
+          if [ "${{ steps.check-tag.outputs.exists }}" = "false" ]; then
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+          fi
+        shell: bash
+
+  publish:
+    needs: tag-release
+    if: needs.tag-release.outputs.should_release == 'true'
+    uses: ./.github/workflows/release.yaml
+    with:
+      tag: ${{ needs.tag-release.outputs.tag }}
+    secrets: inherit

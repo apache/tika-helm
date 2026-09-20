@@ -57,6 +57,17 @@ in which case you may need to augment the commands below.
     helm install tika oci://apache.jfrog.io/tika-helm/tika --version 3.2.3 --set image.tag=latest-full -n tika-test
     ```
 
+* **Chart.yaml dependencies:** Helm appends `name` to `repository`. Set `repository` to the OCI registry URL:
+
+    ```yaml
+    dependencies:
+      - name: tika
+        version: "<version>"
+        repository: "oci://apache.jfrog.io/tika-helm"
+    ```
+
+    Then `helm dependency update`.
+
     Example installation notes:
 
     ```text

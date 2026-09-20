@@ -14,7 +14,12 @@
 # limitations under the License.
 
 # This workflow creates a GitHub Release and publishes the Helm chart to the
-# Apache JFrog Artifactory Helm OCI repository whenever a v* tag is pushed.
+# Apache JFrog Artifactory Helm OCI repository.
+#
+# Triggers:
+#   - push of a v* tag (a human or PAT push; GITHUB_TOKEN tag pushes do not fire this)
+#   - workflow_call from Tag Release on Version Update after an auto-update merge
+#   - workflow_dispatch for an existing tag (recover a missed publish)
 #
 # Publishing uses JFrog CLI (`jf helm`) so the chart push is tied to Artifactory
 # build-info: CI environment and Git metadata are attached, then the build is
@@ -36,6 +41,23 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing git tag to release'
+        required: true
+        type: string
+  workflow_call:
+    inputs:
+      tag:
+        description: 'Existing git tag to release'
+        required: true
+        type: string
+    secrets:
+      ARTIFACTORY_USERNAME:
+        required: true
+      ARTIFACTORY_PASSWORD:
+        required: true
 
 permissions:
   contents: write
@@ -51,10 +73,22 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve release tag
+        id: rel
+        run: |
+          TAG="${{ inputs.tag }}"
+          if [ -z "$TAG" ]; then
+            TAG="${GITHUB_REF_NAME}"
+          fi
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+        shell: bash
+
       - name: Checkout
         uses: actions/checkout@v6
         with:
+          ref: ${{ steps.rel.outputs.tag }}
           fetch-depth: 0
+          fetch-tags: true
 
       - name: Extract versions from Chart.yaml
         id: versions
@@ -68,10 +102,10 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          name: "tika-helm ${{ github.ref_name }}"
+          tag_name: ${{ steps.rel.outputs.tag }}
+          name: "tika-helm ${{ steps.rel.outputs.tag }}"
           body: |
-            ## tika-helm ${{ github.ref_name }}
+            ## tika-helm ${{ steps.rel.outputs.tag }}
 
             **Chart version:** `${{ steps.versions.outputs.chart_version }}`
             **App version (Docker image tag):** `${{ steps.versions.outputs.app_version }}`

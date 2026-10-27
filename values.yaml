@@ -60,6 +60,9 @@ serviceAccount:
 # -- Annotations to add to the Tika pods
 podAnnotations: {}
 
+# -- Additional labels to add to the Tika pods
+podLabels: {}
+
 # -- Security context for the pod (e.g. fsGroup: 2000)
 podSecurityContext: {}
 

@@ -311,6 +311,15 @@
       "title": "podAnnotations",
       "type": "object"
     },
+    "podLabels": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Additional labels to add to the Tika pods",
+      "required": [],
+      "title": "podLabels",
+      "type": "object"
+    },
     "podSecurityContext": {
       "additionalProperties": true,
       "description": "Security context for the pod",
@@ -692,6 +701,7 @@
     "namespaceOverride",
     "serviceAccount",
     "podAnnotations",
+    "podLabels",
     "podSecurityContext",
     "securityContext",
     "service",

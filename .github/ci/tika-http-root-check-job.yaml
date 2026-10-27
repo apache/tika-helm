@@ -26,6 +26,15 @@ spec:
       containers:
         - name: curl
           image: curlimages/curl:8.16.0
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 100
+            seccompProfile:
+              type: RuntimeDefault
           command: ["sh", "-c"]
           args:
             - |

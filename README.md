@@ -411,7 +411,7 @@ false
 {}
 </pre>
 </td>
-			<td></td>
+			<td>Security context for the pod (e.g. fsGroup: 2000)</td>
 		</tr>
 		<tr>
 			<td>readinessProbe.failureThreshold</td>
@@ -495,7 +495,7 @@ false
 			<td>securityContext.allowPrivilegeEscalation</td>
 			<td>bool</td>
 			<td><pre lang="json">
-true
+false
 </pre>
 </td>
 			<td>Allow privilege escalation for the container</td>
@@ -546,6 +546,17 @@ true
 </pre>
 </td>
 			<td>User ID to run the container</td>
+		</tr>
+		<tr>
+			<td>securityContext.seccompProfile</td>
+			<td>object</td>
+			<td><pre lang="json">
+{
+  "type": "RuntimeDefault"
+}
+</pre>
+</td>
+			<td>Seccomp profile for the container (required by Pod Security Standard "restricted")</td>
 		</tr>
 		<tr>
 			<td>service.port</td>

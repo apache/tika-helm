@@ -405,6 +405,15 @@ false
 			<td>Annotations to add to the Tika pods</td>
 		</tr>
 		<tr>
+			<td>podLabels</td>
+			<td>object</td>
+			<td><pre lang="json">
+{}
+</pre>
+</td>
+			<td>Additional labels to add to the Tika pods</td>
+		</tr>
+		<tr>
 			<td>podSecurityContext</td>
 			<td>object</td>
 			<td><pre lang="json">

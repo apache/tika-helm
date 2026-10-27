@@ -99,3 +99,15 @@ tests:
               timeoutSeconds: 30
               failureThreshold: 20
               periodSeconds: 5
+
+  - it: should add custom pod labels
+    set:
+      podLabels:
+        contact/purpose: prod
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["contact/purpose"]
+          value: prod
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          value: tika

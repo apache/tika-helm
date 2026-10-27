@@ -93,7 +93,7 @@ jobs:
 
       - name: Verify Tika HTTP root
         run: |
-          kubectl apply -f .github/ci/tika-http-root-check-job.yaml -n tika-test
+          kubectl apply --warnings-as-errors -f .github/ci/tika-http-root-check-job.yaml -n tika-test
           kubectl wait --for=condition=complete job/tika-http-root-check -n tika-test --timeout=120s
           kubectl delete job tika-http-root-check -n tika-test --ignore-not-found
 
@@ -102,7 +102,7 @@ jobs:
           kubectl create configmap tika-smoke-schema \
             --from-file=values.schema.json=values.schema.json \
             -n tika-test --dry-run=client -o yaml | kubectl apply -f -
-          kubectl apply -f .github/ci/tika-ingest-check-job.yaml -n tika-test
+          kubectl apply --warnings-as-errors -f .github/ci/tika-ingest-check-job.yaml -n tika-test
           kubectl wait --for=condition=complete job/tika-smoke-check -n tika-test --timeout=120s
           kubectl logs job/tika-smoke-check -n tika-test
           kubectl delete job tika-smoke-check -n tika-test --ignore-not-found

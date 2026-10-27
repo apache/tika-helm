@@ -111,3 +111,23 @@ tests:
       - equal:
           path: spec.template.metadata.labels["app.kubernetes.io/name"]
           value: tika
+
+  - it: should keep the selector labels when podLabels collide with them
+    set:
+      podLabels:
+        app.kubernetes.io/name: other
+        team: a
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels["app.kubernetes.io/name"]
+          value: tika
+      - equal:
+          path: spec.template.metadata.labels.team
+          value: a
+
+  - it: should reject non-string pod label values
+    set:
+      podLabels:
+        team: true
+    asserts:
+      - failedTemplate: {}

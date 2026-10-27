@@ -312,7 +312,9 @@
       "type": "object"
     },
     "podLabels": {
-      "additionalProperties": true,
+      "additionalProperties": {
+        "type": "string"
+      },
       "description": "Additional labels to add to the Tika pods",
       "required": [],
       "title": "podLabels",

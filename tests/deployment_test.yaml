@@ -36,6 +36,12 @@ tests:
       - lengthEqual:
           path: spec.template.spec.containers
           count: 1
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.allowPrivilegeEscalation
+          value: false
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: RuntimeDefault
       - isSubset:
           path: spec.template.spec.containers[0]
           content:
@@ -99,6 +105,22 @@ tests:
               timeoutSeconds: 30
               failureThreshold: 20
               periodSeconds: 5
+  - it: should allow overriding the seccomp profile
+    set:
+      image.tag: latest
+      securityContext.seccompProfile.type: Localhost
+      securityContext.seccompProfile.localhostProfile: profiles/tika.json
+      podSecurityContext.seccompProfile.type: RuntimeDefault
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.type
+          value: Localhost
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.seccompProfile.localhostProfile
+          value: profiles/tika.json
+      - equal:
+          path: spec.template.spec.securityContext.seccompProfile.type
+          value: RuntimeDefault
 
   - it: should add custom pod labels
     set:

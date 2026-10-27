@@ -78,11 +78,14 @@ jobs:
             -n tika-test --create-namespace \
             --wait --timeout 5m
 
+      # Enforce the restricted Pod Security Standard so non-compliant pods fail admission.
       - name: Install chart from repo
         if: inputs.chart_version == ''
         run: |
+          kubectl create namespace tika-test
+          kubectl label namespace tika-test pod-security.kubernetes.io/enforce=restricted
           helm install tika . \
-            -n tika-test --create-namespace \
+            -n tika-test \
             --wait --timeout 5m
 
       - name: Run helm test

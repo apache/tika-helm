@@ -312,7 +312,7 @@
       "type": "object"
     },
     "podSecurityContext": {
-      "additionalProperties": false,
+      "additionalProperties": true,
       "description": "Security context for the pod",
       "properties": {
         "fsGroup": {
@@ -585,8 +585,7 @@
         "readOnlyRootFilesystem",
         "runAsNonRoot",
         "runAsUser",
-        "runAsGroup",
-        "seccompProfile"
+        "runAsGroup"
       ],
       "title": "securityContext",
       "type": "object"

@@ -60,14 +60,12 @@ serviceAccount:
 # -- Annotations to add to the Tika pods
 podAnnotations: {}
 
-podSecurityContext:
-  # -- Security context for the pod
-  {}
-  # fsGroup: 2000
+# -- Security context for the pod (e.g. fsGroup: 2000)
+podSecurityContext: {}
 
 securityContext:
   # -- Allow privilege escalation for the container
-  allowPrivilegeEscalation: true
+  allowPrivilegeEscalation: false
   capabilities:
     # -- Capabilities to drop for the container
     drop:
@@ -80,6 +78,9 @@ securityContext:
   runAsUser: 35002
   # -- Group ID to run the container
   runAsGroup: 35002
+  # -- Seccomp profile for the container (required by Pod Security Standard "restricted")
+  seccompProfile:
+    type: RuntimeDefault
 
 service:
   # -- Type of Kubernetes service to expose Tika

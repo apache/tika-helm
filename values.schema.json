@@ -313,6 +313,61 @@
     },
     "podSecurityContext": {
       "additionalProperties": false,
+      "description": "Security context for the pod",
+      "properties": {
+        "fsGroup": {
+          "description": "Group ID for the pod volumes",
+          "required": [],
+          "title": "fsGroup",
+          "type": "integer"
+        },
+        "runAsGroup": {
+          "description": "Group ID to run the pod",
+          "required": [],
+          "title": "runAsGroup",
+          "type": "integer"
+        },
+        "runAsNonRoot": {
+          "description": "Require the pod to run as a non-root user",
+          "required": [],
+          "title": "runAsNonRoot",
+          "type": "boolean"
+        },
+        "runAsUser": {
+          "description": "User ID to run the pod",
+          "required": [],
+          "title": "runAsUser",
+          "type": "integer"
+        },
+        "seccompProfile": {
+          "additionalProperties": false,
+          "description": "Seccomp profile for the pod",
+          "properties": {
+            "localhostProfile": {
+              "description": "Localhost profile name (required when type is Localhost)",
+              "required": [],
+              "title": "localhostProfile",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of seccomp profile (RuntimeDefault or Localhost for restricted)",
+              "enum": [
+                "Unconfined",
+                "RuntimeDefault",
+                "Localhost"
+              ],
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "title": "seccompProfile",
+          "type": "object"
+        }
+      },
       "required": [],
       "title": "podSecurityContext",
       "type": "object"
@@ -436,7 +491,7 @@
       "additionalProperties": false,
       "properties": {
         "allowPrivilegeEscalation": {
-          "default": true,
+          "default": false,
           "description": "Allow privilege escalation for the container",
           "required": [],
           "title": "allowPrivilegeEscalation",
@@ -494,6 +549,34 @@
           "required": [],
           "title": "runAsUser",
           "type": "integer"
+        },
+        "seccompProfile": {
+          "additionalProperties": false,
+          "description": "Seccomp profile for the container (required by Pod Security Standard \"restricted\")",
+          "properties": {
+            "localhostProfile": {
+              "description": "Localhost profile name (required when type is Localhost)",
+              "required": [],
+              "title": "localhostProfile",
+              "type": "string"
+            },
+            "type": {
+              "description": "Type of seccomp profile (RuntimeDefault or Localhost for restricted)",
+              "enum": [
+                "Unconfined",
+                "RuntimeDefault",
+                "Localhost"
+              ],
+              "required": [],
+              "title": "type",
+              "type": "string"
+            }
+          },
+          "required": [
+            "type"
+          ],
+          "title": "seccompProfile",
+          "type": "object"
         }
       },
       "required": [
@@ -502,7 +585,8 @@
         "readOnlyRootFilesystem",
         "runAsNonRoot",
         "runAsUser",
-        "runAsGroup"
+        "runAsGroup",
+        "seccompProfile"
       ],
       "title": "securityContext",
       "type": "object"
